@@ -1,0 +1,1 @@
+ /Users/enril/Desktop/Develop/Flutter/flutter_text/.dart_tool/flutter_build/2b54c729e27ba11ff64cedc8f5473920/native_assets.yaml: 

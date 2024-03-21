@@ -1,0 +1,41 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
+android {
+    compileSdkVersion 34 // 컴파일 SDK 버전을 지정합니다. 필요에 따라 변경하세요.
+    buildToolsVersion "30.0.2" // 빌드 도구 버전을 지정합니다. 필요에 따라 변경하세요.
+    defaultConfig {
+        applicationId "com.example.flutter_ex"
+        minSdkVersion 30 // 최소 SDK 버전을 지정합니다. 필요에 따라 변경하세요.
+        targetSdkVersion 34 // 타겟 SDK 버전을 지정합니다. 필요에 따라 변경하세요.
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
+    }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.debug
+        }
+    }
+}
+
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
+}
+
+flutter {
+    source '../..'
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'com.android.support:multidex:1.0.3'
+    implementation 'io.flutter:flutter_embedding_v2'
+    implementation 'io.flutter:plugins:flutter_plugin_android_lifecycle:2.0.0'
+}

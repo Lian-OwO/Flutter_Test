@@ -1,0 +1,63 @@
+{
+  "main_library": {
+    "exported_symbols": [
+      {
+        "data": {
+          "global": [
+            "_$s19file_selector_macos15PanelControllerTL",
+            "_$s19file_selector_macos18FileSelectorPluginC6handle_6resultySo17FlutterMethodCallC_yypSgctF",
+            "_file_selector_macosVersionString",
+            "_$s19file_selector_macos12ViewProviderTL",
+            "_$s19file_selector_macos18FileSelectorPluginC9configure33_DED4EE33D58DF5954824CAE0A7E4FF82LL9openPanel4with17choosingDirectoryySo06NSOpenQ0C_SDySSypGSbtF",
+            "_$s19file_selector_macos18FileSelectorPluginCMa",
+            "_$s19file_selector_macos18FileSelectorPluginCfD",
+            "_$s19file_selector_macos18FileSelectorPluginCACycfc",
+            "_$s19file_selector_macos18FileSelectorPluginC6handle_6resultySo17FlutterMethodCallC_yypSgctFTq",
+            "_$s19file_selector_macos18FileSelectorPluginC8register4withySo07FlutterF9Registrar_p_tFZ",
+            "_$s19file_selector_macos18FileSelectorPluginCMn",
+            "_$s19file_selector_macos18FileSelectorPluginC12viewProvider15panelControllerAcA04ViewH0_p_AA05PanelJ0_ptcfCTq",
+            "_file_selector_macosVersionNumber",
+            "_$s19file_selector_macos18FileSelectorPluginCACycfC",
+            "_$s19file_selector_macos18FileSelectorPluginCN",
+            "_$s19file_selector_macos18FileSelectorPluginC9configure33_DED4EE33D58DF5954824CAE0A7E4FF82LL5panel4withySo11NSSavePanelC_SDySSypGtF",
+            "_$s19file_selector_macos18FileSelectorPluginC12viewProvider15panelControllerAcA04ViewH0_p_AA05PanelJ0_ptcfC",
+            "_$s19file_selector_macos18FileSelectorPluginC19openDirectoryMethod33_DED4EE33D58DF5954824CAE0A7E4FF82LLSSvpfi",
+            "_$s19file_selector_macos12ViewProviderMp",
+            "_$s19file_selector_macos18FileSelectorPluginC10openMethod33_DED4EE33D58DF5954824CAE0A7E4FF82LLSSvpfi",
+            "_$s19file_selector_macos18FileSelectorPluginC12viewProvider15panelControllerAcA04ViewH0_p_AA05PanelJ0_ptcfc",
+            "_$s19file_selector_macos18FileSelectorPluginC10saveMethod33_DED4EE33D58DF5954824CAE0A7E4FF82LLSSvpfi",
+            "_$s19file_selector_macos15PanelControllerMp"
+          ],
+          "objc_class": [
+            "_TtC19file_selector_macos18FileSelectorPlugin",
+            "PodsDummy_file_selector_macos"
+          ]
+        }
+      }
+    ],
+    "flags": [
+      {
+        "attributes": [
+          "not_app_extension_safe"
+        ]
+      }
+    ],
+    "install_names": [
+      {
+        "name": "@rpath/file_selector_macos.framework/Versions/A/file_selector_macos"
+      }
+    ],
+    "swift_abi": [
+      {
+        "abi": 7
+      }
+    ],
+    "target_info": [
+      {
+        "min_deployment": "11",
+        "target": "arm64-macos"
+      }
+    ]
+  },
+  "tapi_tbd_version": 5
+}
