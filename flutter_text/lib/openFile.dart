@@ -162,7 +162,7 @@ class _TextEditorPageState extends State<TextEditorPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Enter File Name'),
+          title: Text('파일 이름 입력'),
           content: TextField(
             controller: fileNameController,
             decoration: InputDecoration(hintText: 'Enter file name'),
