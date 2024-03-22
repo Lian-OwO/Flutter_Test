@@ -165,7 +165,7 @@ class _TextEditorPageState extends State<TextEditorPage> {
           title: Text('파일 이름 입력'),
           content: TextField(
             controller: fileNameController,
-            decoration: InputDecoration(hintText: 'Enter file name'),
+            decoration: InputDecoration(hintText: '파일이름 입력'),
           ),
           actions: <Widget>[
             TextButton(
