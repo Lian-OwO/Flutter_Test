@@ -2,14 +2,17 @@ import 'package:flutter/material.dart';
 
 class Component extends StatefulWidget {
   final Function(String) onDrop; // 드롭될 때 호출되는 콜백 함수
+  final List<String> canvasWidgets; // 캔버스에 존재하는 위젯 리스트
 
-  Component({required this.onDrop});
+  Component({required this.onDrop, required this.canvasWidgets});
 
   @override
   _ComponentState createState() => _ComponentState();
 }
 
 class _ComponentState extends State<Component> {
+  int _buttonCount = 1; // 버튼 이름에 추가될 숫자, 초기값은 1로 설정
+
   @override
   Widget build(BuildContext context) {
     return Draggable<String>(
@@ -44,9 +47,20 @@ class _ComponentState extends State<Component> {
         print('드래그 종료');
         if (!details.wasAccepted) {
           // 작업 영역에 버튼 추가할 수 있도록 처리
-          widget.onDrop('Button');
+          String buttonName = 'Button$_buttonCount';
+          // 캔버스에 버튼 이름이 이미 존재하는지 확인하고 중복을 방지하기 위해 숫자를 증가시킴
+          while (widgetExists(buttonName)) {
+            _buttonCount++;
+            buttonName = 'Button$_buttonCount';
+          }
+          widget.onDrop(buttonName);
         }
       },
     );
+  }
+
+  bool widgetExists(String name) {
+    // 캔버스에 버튼이 존재하는지 확인하는 함수
+    return widget.canvasWidgets.contains(name);
   }
 }
