@@ -3,12 +3,12 @@ import 'component.dart';
 
 class MainPage extends StatefulWidget {
   @override
-  _MainPageState createState() => _MainPageState();
+  MainPageState createState() => MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class MainPageState extends State<MainPage> {
   List<Widget> _droppedButtons = []; // 작업 영역에 추가된 버튼들
-  List<String> _canvasWidgets = ['Button']; // 캔버스에 존재하는 버튼 리스트
+  // List<String> _canvasWidgets = ['Button']; // 캔버스에 존재하는 버튼 리스트
   int _buttonCount = 1; // 버튼 카운트
 
   @override
@@ -42,6 +42,7 @@ class _MainPageState extends State<MainPage> {
                   // 드롭된 경우, 작업 영역에 버튼 추가
                   setState(() {
                     final buttonName = 'Button$_buttonCount'; // 버튼 이름 생성
+                    print("버튼 생성");
                     _droppedButtons.add(
                       Draggable<String>(
                         data: buttonName,
