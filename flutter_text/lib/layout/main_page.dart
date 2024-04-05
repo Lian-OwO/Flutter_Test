@@ -8,7 +8,6 @@ class MainPage extends StatefulWidget {
 
 class MainPageState extends State<MainPage> {
   List<Widget> _droppedButtons = []; // 작업 영역에 추가된 버튼들
-  // List<String> _canvasWidgets = ['Button']; // 캔버스에 존재하는 버튼 리스트
   int _buttonCount = 1; // 버튼 카운트
 
   @override
@@ -16,7 +15,7 @@ class MainPageState extends State<MainPage> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Drag and Drop Example'),
+          title: Text('Drag and Drop Test'),
         ),
         body: Row(
           children: [
@@ -27,7 +26,8 @@ class MainPageState extends State<MainPage> {
                 onDrop: (data) {
                   // 왼쪽 영역에 드롭될 때의 동작 처리
                   // 여기서는 아무 작업도 하지 않음
-                }, canvasWidgets: [],
+                },
+                canvasWidgets: [],
               ),
             ),
             // 가운데 캔버스 (작업 영역)
@@ -41,31 +41,14 @@ class MainPageState extends State<MainPage> {
                 onAccept: (data) {
                   // 드롭된 경우, 작업 영역에 버튼 추가
                   setState(() {
-                    final buttonName = 'Button$_buttonCount'; // 버튼 이름 생성
-                    print("버튼 생성");
-                    _droppedButtons.add(
-                      Draggable<String>(
-                        data: buttonName,
-                        childWhenDragging: Container(), // 드래그 중에는 빈 컨테이너 표시
-                        feedback: Material(
-                          elevation: 4.0,
-                          child: Container(
-                            width: 100.0,
-                            height: 50.0,
-                            color: Colors.grey,
-                            child: Center(child: Text(buttonName)),
-                          ),
-                        ),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            // 버튼을 클릭했을 때의 처리
-                            print('$buttonName 클릭');
-                          },
-                          child: Text(buttonName),
-                        ),
-                      ),
-                    );
-                    _buttonCount++; // 버튼 카운트 증가
+                    if (!_isButtonInWorkspace(data)) {
+                      final buttonName = 'Button$_buttonCount'; // 버튼 이름 생성
+                      print("버튼 생성");
+                      _droppedButtons.add(
+                        _buildDraggableButton(buttonName),
+                      );
+                      _buttonCount++; // 버튼 카운트 증가
+                    }
                   });
                 },
                 builder: (BuildContext context, List<String?> candidateData, List<dynamic> rejectedData) {
@@ -99,6 +82,29 @@ class MainPageState extends State<MainPage> {
     );
   }
 
+  Widget _buildDraggableButton(String buttonName) {
+    return Draggable<String>(
+      data: buttonName,
+      childWhenDragging: Container(), // 드래그 중에는 빈 컨테이너 표시
+      feedback: Material(
+        elevation: 4.0,
+        child: Container(
+          width: 100.0,
+          height: 50.0,
+          color: Colors.grey,
+          child: Center(child: Text(buttonName)),
+        ),
+      ),
+      child: ElevatedButton(
+        onPressed: () {
+          // 버튼을 클릭했을 때의 처리
+          print('$buttonName 클릭');
+        },
+        child: Text(buttonName),
+      ),
+    );
+  }
+
   Widget _buildDragTarget(Widget button) {
     return DragTarget<String>(
       builder: (BuildContext context, List<String?> candidateData, List<dynamic> rejectedData) {
@@ -115,5 +121,9 @@ class MainPageState extends State<MainPage> {
         });
       },
     );
+  }
+
+  bool _isButtonInWorkspace(String? data) {
+    return _droppedButtons.any((widget) => widget is Draggable<String> && widget.data == data);
   }
 }
