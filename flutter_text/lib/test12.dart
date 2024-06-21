@@ -6,12 +6,14 @@ void main(){
   }
 
   items.forEach(print);
-  items.forEach((e) {
+  for (var e in items) {
     print('익명함수 $e');
-  });
+  }
 
   //람다식
-  items.forEach((e) => print(e));
+  for (var e in items) {
+    print(e);
+  }
 
 // 짝수 출력
   for (var i = 0; i < items.length; i++) {
@@ -26,11 +28,11 @@ void main(){
 
   //forEach를 이용한 리스트 변환
   final result = [];
-  items.forEach((e){
+  for (var e in items) {
     if (e % 2 == 0){
       result.add(e);
     }
-  });
+  }
   print('forEach를 이용한 리스트 출력 $result');
   //toList()를 이용한 리스트 변환
   final result2 = items.where((e) => e % 2 == 0).toList();

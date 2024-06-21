@@ -10,7 +10,7 @@ class SuperHero extends Hero{
   @override
   void run(){
     super.run(); //부모의 run실행
-    this.fly(); //추가로 fly도 실행
+    fly(); //추가로 fly도 실행
 }
 void fly(){}
 }

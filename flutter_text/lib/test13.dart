@@ -34,7 +34,7 @@ void main(){
     print([1,2,3,4,5,6]);
   }else{
     print([1,2,3,4,5]); //false라 출력
-  };
+  }
 
 //컬렉션 for
   var listOfInts = [1,2,3];
@@ -46,17 +46,9 @@ void main(){
   listOfStrings.forEach(print);
 
   String? name;
-  //null처리
-  if(name != null){
-    print(name.length);
-  }
   print(name?.length);
 
   //null이 아니면 길이, null이면 0 반환
-  if(name != null){
-    print(name.length);
-  }else{
-    print(0);
-  }
+  print(0);
 }
 

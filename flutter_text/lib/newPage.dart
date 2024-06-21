@@ -1,24 +1,23 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:universal_html/html.dart' as html;
 
-import 'package:path_provider/path_provider.dart';
-import 'newPage.dart';
 import 'main.dart'; // DetailScreen 클래스를 import 합니다.
 
 void main() {
-  runApp(NewPage());
+  runApp(const NewPage());
 }
 
 class NewPage extends StatelessWidget {
+  const NewPage({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
       home: TextEditorPage(),
     );
@@ -26,6 +25,8 @@ class NewPage extends StatelessWidget {
 }
 
 class TextEditorPage extends StatefulWidget {
+  const TextEditorPage({super.key});
+
   @override
   _TextEditorPageState createState() => _TextEditorPageState();
 }
@@ -66,24 +67,22 @@ class _TextEditorPageState extends State<TextEditorPage> {
         String? directoryPath = await FilePicker.platform.getDirectoryPath();
         if (directoryPath != null) {
           _fileName = (await _getFileName())!;
-          if (_fileName != null) {
-            final String textToSave = _textEditingController.text;
-            final File file = File('$directoryPath/$_fileName.txt'); // 확장자를 포함한 파일 경로 설정
-            await file.writeAsString(textToSave);
-            print('File saved successfully');
+          final String textToSave = _textEditingController.text;
+          final File file = File('$directoryPath/$_fileName.txt'); // 확장자를 포함한 파일 경로 설정
+          await file.writeAsString(textToSave);
+          print('File saved successfully');
 
-            // 웹 플랫폼에서는 다운로드 링크 생성
-            if (kIsWeb) {
-              final Uint8List bytes = file.readAsBytesSync();
-              final blob = html.Blob([bytes]);
-              final url = html.Url.createObjectUrlFromBlob(blob);
-              html.AnchorElement(href: url)
-                ..setAttribute('download', '$_fileName.txt')
-                ..click();
-              html.Url.revokeObjectUrl(url);
-            }
+          // 웹 플랫폼에서는 다운로드 링크 생성
+          if (kIsWeb) {
+            final Uint8List bytes = file.readAsBytesSync();
+            final blob = html.Blob([bytes]);
+            final url = html.Url.createObjectUrlFromBlob(blob);
+            html.AnchorElement(href: url)
+              ..setAttribute('download', '$_fileName.txt')
+              ..click();
+            html.Url.revokeObjectUrl(url);
           }
-        }
+                }
       }
     } catch (e) {
       print('Error saving file: $e');
@@ -98,24 +97,24 @@ class _TextEditorPageState extends State<TextEditorPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Enter File Name'),
+          title: const Text('Enter File Name'),
           content: TextField(
             controller: fileNameController,
-            decoration: InputDecoration(hintText: 'Enter file name'),
+            decoration: const InputDecoration(hintText: 'Enter file name'),
           ),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
                 fileName = fileNameController.text;
                 Navigator.of(context).pop();
               },
-              child: Text('Save'),
+              child: const Text('Save'),
             ),
           ],
         );
@@ -128,21 +127,21 @@ class _TextEditorPageState extends State<TextEditorPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('새로 만들기'),
+        title: const Text('새로 만들기'),
         backgroundColor: Colors.blue,
         leading: IconButton(
           tooltip: '뒤로가기', // 버튼 위에 마우스를 가져가면 나타날 텍스트
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => DetailScreen(item: '세부화면')),
+              MaterialPageRoute(builder: (context) => const DetailScreen(item: '세부화면')),
             );
           },
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.save),
+            icon: const Icon(Icons.save),
             onPressed: _saveFile,
           ),
         ],

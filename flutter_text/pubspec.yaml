@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '3.3.1'
+  sdk: '3.4.1'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -38,6 +38,9 @@ dependencies:
   path_provider: ^2.0.15
   super_drag_and_drop: ^0.8.5
 
+  file_picker: any
+  universal_html: any
+  draggable_bottom_sheet_nullsafety: ^1.0.2
 dev_dependencies:
   flutter_test:
     sdk: flutter

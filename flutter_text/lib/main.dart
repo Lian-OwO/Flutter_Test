@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_text/openFile.dart';
 import 'newPage.dart';
-import 'openFile.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -16,7 +15,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.cyan,
       ),
-      home: MyHomePage(),
+      home: const MyHomePage(),
     );
   }
 }
@@ -25,20 +24,20 @@ class MyApp extends StatelessWidget {
 class DetailScreen extends StatelessWidget {
   final String item;
 
-  DetailScreen({required this.item});
+  const DetailScreen({super.key, required this.item});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Detail Screen'),
+        title: const Text('Detail Screen'),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             // 뒤로가기 버튼 눌렀을 때 MyHomePage로 돌아가기
             Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => MyHomePage()),
+              MaterialPageRoute(builder: (context) => const MyHomePage()),
                   (route) => false,
             );
           },
@@ -49,36 +48,36 @@ class DetailScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(item),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => NewPage(),
+                          builder: (context) => const NewPage(),
                         ),
                       );
                     },
-                    child: Text('새로 만들기'),
+                    child: const Text('새로 만들기'),
                   ),
                 ),
-                SizedBox(height: 15),
+                const SizedBox(height: 15),
                 ElevatedButton(
                   onPressed: () {
                     Navigator.push(
                     context,
                     MaterialPageRoute(
                     // 불러오기 버튼 눌렸을 때 실행할 동작
-                    builder: (context) => OpenFile(),
+                    builder: (context) => const OpenFile(),
                     ),
                     );
                   },
-                  child: Text('불러오기'),
+                  child: const Text('불러오기'),
                 ),
               ],
             ),
@@ -95,42 +94,44 @@ class DetailScreen extends StatelessWidget {
 
 
 class MyHomePage extends StatelessWidget {
+  const MyHomePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     final items = List.generate(100, (i) => i).toList();
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('앱바 타이틀'),
+        title: const Text('앱바 타이틀'),
         backgroundColor: Colors.cyan,
       ),
       body: ListView(
         scrollDirection: Axis.vertical,
         children: <Widget>[
           ListTile(
-            leading: Icon(Icons.home),
-            title: Text('Home'),
-            trailing: Icon(Icons.navigate_next),
+            leading: const Icon(Icons.home),
+            title: const Text('Home'),
+            trailing: const Icon(Icons.navigate_next),
             onTap: () {
               // "Home" 버튼을 누를 때 DetailScreen으로 이동
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => DetailScreen(item: '세부화면'),
+                  builder: (context) => const DetailScreen(item: '세부화면'),
                 ),
               );
             },
           ),
           ListTile(
-            leading: Icon(Icons.event),
-            title: Text('Event'),
-            trailing: Icon(Icons.navigate_next),
+            leading: const Icon(Icons.event),
+            title: const Text('Event'),
+            trailing: const Icon(Icons.navigate_next),
             onTap: () {},
           ),
           ListTile(
-            leading: Icon(Icons.camera),
-            title: Text('Camera'),
-            trailing: Icon(Icons.navigate_next),
+            leading: const Icon(Icons.camera),
+            title: const Text('Camera'),
+            trailing: const Icon(Icons.navigate_next),
             onTap: () {},
           ),
           Stack(
@@ -148,7 +149,7 @@ class MyHomePage extends StatelessWidget {
                           height: 100,
                           padding: const EdgeInsets.all(8.0),
                           margin: const EdgeInsets.all(8.0),
-                          child: Text('첫번째 위젯'),
+                          child: const Text('첫번째 위젯'),
                         ),
                       ),
                       Expanded(
@@ -158,7 +159,7 @@ class MyHomePage extends StatelessWidget {
                           height: 100,
                           padding: const EdgeInsets.all(8.0),
                           margin: const EdgeInsets.all(8.0),
-                          child: Text('두번째 위젯'),
+                          child: const Text('두번째 위젯'),
                         ),
                       ),
                       Expanded(
@@ -168,7 +169,7 @@ class MyHomePage extends StatelessWidget {
                           height: 100,
                           padding: const EdgeInsets.all(8.0),
                           margin: const EdgeInsets.all(8.0),
-                          child: Text('세번째 위젯'),
+                          child: const Text('세번째 위젯'),
                         ),
                       ),
                     ],
@@ -183,7 +184,7 @@ class MyHomePage extends StatelessWidget {
                           height: 100,
                           padding: const EdgeInsets.all(8.0),
                           margin: const EdgeInsets.all(8.0),
-                          child: Text('네번째 위젯'),
+                          child: const Text('네번째 위젯'),
                         ),
                       ),
                       Expanded(
@@ -193,7 +194,7 @@ class MyHomePage extends StatelessWidget {
                           height: 100,
                           padding: const EdgeInsets.all(8.0),
                           margin: const EdgeInsets.all(8.0),
-                          child: Text('다섯번째 위젯'),
+                          child: const Text('다섯번째 위젯'),
                         ),
                       ),
                       Expanded(
@@ -203,7 +204,7 @@ class MyHomePage extends StatelessWidget {
                           height: 100,
                           padding: const EdgeInsets.all(8.0),
                           margin: const EdgeInsets.all(8.0),
-                          child: Text('여섯번째 위젯'),
+                          child: const Text('여섯번째 위젯'),
                         ),
                       ),
                     ],
@@ -218,7 +219,7 @@ class MyHomePage extends StatelessWidget {
                           height: 100,
                           padding: const EdgeInsets.all(8.0),
                           margin: const EdgeInsets.all(8.0),
-                          child: Text('일곱번째 위젯'),
+                          child: const Text('일곱번째 위젯'),
                         ),
                       ),
                       Expanded(
@@ -228,7 +229,7 @@ class MyHomePage extends StatelessWidget {
                           height: 100,
                           padding: const EdgeInsets.all(8.0),
                           margin: const EdgeInsets.all(8.0),
-                          child: Text('여덟번째 위젯'),
+                          child: const Text('여덟번째 위젯'),
                         ),
                       ),
                       Expanded(

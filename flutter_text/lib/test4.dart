@@ -11,11 +11,10 @@ void main(){
   String text = 'hello';
   if (text is int){
     print('정수');
-  }else if(text is String){
+  }else {
     print('문자형');
-  }else{
-    print('정수도 실수도 아님');
   }
+
 
   //삼항연산
   var todo = isRainy ? '빨래 안함' : '빨래함';

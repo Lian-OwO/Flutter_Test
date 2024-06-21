@@ -57,21 +57,27 @@
     },
     {
       "name": "cupertino_icons",
-      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/cupertino_icons-1.0.6",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/cupertino_icons-1.0.8",
       "packageUri": "lib/",
-      "languageVersion": "2.19"
+      "languageVersion": "3.1"
     },
     {
       "name": "device_info_plus",
-      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/device_info_plus-9.1.2",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/device_info_plus-10.1.0",
       "packageUri": "lib/",
-      "languageVersion": "2.18"
+      "languageVersion": "3.3"
     },
     {
       "name": "device_info_plus_platform_interface",
       "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/device_info_plus_platform_interface-7.0.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
+    },
+    {
+      "name": "draggable_bottom_sheet_nullsafety",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/draggable_bottom_sheet_nullsafety-1.0.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.14"
     },
     {
       "name": "fake_async",
@@ -137,25 +143,25 @@
       "name": "flutter",
       "rootUri": "file:///opt/homebrew/Caskroom/flutter/3.19.3/flutter/packages/flutter",
       "packageUri": "lib/",
-      "languageVersion": "3.2"
+      "languageVersion": "3.3"
     },
     {
       "name": "flutter_lints",
-      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/flutter_lints-3.0.1",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/flutter_lints-3.0.2",
       "packageUri": "lib/",
-      "languageVersion": "3.0"
+      "languageVersion": "3.1"
     },
     {
       "name": "flutter_plugin_android_lifecycle",
-      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/flutter_plugin_android_lifecycle-2.0.17",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/flutter_plugin_android_lifecycle-2.0.19",
       "packageUri": "lib/",
-      "languageVersion": "2.19"
+      "languageVersion": "3.2"
     },
     {
       "name": "flutter_test",
       "rootUri": "file:///opt/homebrew/Caskroom/flutter/3.19.3/flutter/packages/flutter_test",
       "packageUri": "lib/",
-      "languageVersion": "3.2"
+      "languageVersion": "3.3"
     },
     {
       "name": "flutter_web_plugins",
@@ -195,21 +201,21 @@
     },
     {
       "name": "leak_tracker",
-      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/leak_tracker-10.0.0",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/leak_tracker-10.0.4",
       "packageUri": "lib/",
-      "languageVersion": "3.1"
+      "languageVersion": "3.2"
     },
     {
       "name": "leak_tracker_flutter_testing",
-      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/leak_tracker_flutter_testing-2.0.1",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/leak_tracker_flutter_testing-3.0.3",
       "packageUri": "lib/",
-      "languageVersion": "3.1"
+      "languageVersion": "3.2"
     },
     {
       "name": "leak_tracker_testing",
-      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/leak_tracker_testing-2.0.1",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/leak_tracker_testing-3.0.1",
       "packageUri": "lib/",
-      "languageVersion": "3.1"
+      "languageVersion": "3.2"
     },
     {
       "name": "lints",
@@ -231,7 +237,7 @@
     },
     {
       "name": "meta",
-      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/meta-1.11.0",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/meta-1.12.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -243,15 +249,15 @@
     },
     {
       "name": "path_provider",
-      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/path_provider-2.1.2",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/path_provider-2.1.3",
       "packageUri": "lib/",
-      "languageVersion": "3.0"
+      "languageVersion": "3.1"
     },
     {
       "name": "path_provider_android",
-      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/path_provider_android-2.2.2",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/path_provider_android-2.2.4",
       "packageUri": "lib/",
-      "languageVersion": "3.0"
+      "languageVersion": "3.2"
     },
     {
       "name": "path_provider_foundation",
@@ -333,19 +339,19 @@
     },
     {
       "name": "super_clipboard",
-      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/super_clipboard-0.8.9",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/super_clipboard-0.8.12",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
     {
       "name": "super_drag_and_drop",
-      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/super_drag_and_drop-0.8.9",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/super_drag_and_drop-0.8.12",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
     {
       "name": "super_native_extensions",
-      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/super_native_extensions-0.8.9",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/super_native_extensions-0.8.12",
       "packageUri": "lib/",
       "languageVersion": "3.3"
     },
@@ -357,7 +363,7 @@
     },
     {
       "name": "test_api",
-      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/test_api-0.6.1",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/test_api-0.7.0",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
@@ -381,7 +387,7 @@
     },
     {
       "name": "uuid",
-      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/uuid-4.3.3",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/uuid-4.4.0",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
@@ -393,27 +399,27 @@
     },
     {
       "name": "vm_service",
-      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/vm_service-13.0.0",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/vm_service-14.2.1",
       "packageUri": "lib/",
-      "languageVersion": "3.0"
+      "languageVersion": "3.3"
     },
     {
       "name": "web",
-      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/web-0.5.0",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/web-0.5.1",
       "packageUri": "lib/",
       "languageVersion": "3.3"
     },
     {
       "name": "win32",
-      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/win32-5.3.0",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/win32-5.4.0",
       "packageUri": "lib/",
       "languageVersion": "3.3"
     },
     {
       "name": "win32_registry",
-      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/win32_registry-1.1.2",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/win32_registry-1.1.3",
       "packageUri": "lib/",
-      "languageVersion": "3.1"
+      "languageVersion": "3.3"
     },
     {
       "name": "xdg_directories",
@@ -425,10 +431,13 @@
       "name": "flutter_text",
       "rootUri": "../",
       "packageUri": "lib/",
-      "languageVersion": "3.3"
+      "languageVersion": "3.4"
     }
   ],
-  "generated": "2024-03-25T07:41:56.038367Z",
+  "generated": "2024-06-04T05:54:53.905042Z",
   "generator": "pub",
-  "generatorVersion": "3.3.1"
+  "generatorVersion": "3.4.1",
+  "flutterRoot": "file:///opt/homebrew/Caskroom/flutter/3.19.3/flutter",
+  "flutterVersion": "3.22.1",
+  "pubCache": "file:///Users/enril/.pub-cache"
 }

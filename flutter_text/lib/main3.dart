@@ -10,13 +10,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: '스택 데모',
       theme: ThemeData(primarySwatch: Colors.amber),
-      home: MyHomePage(),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatelessWidget {
-  const MyHomePage({Key? key}) : super(key: key);
+  const MyHomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
