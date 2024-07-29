@@ -5,7 +5,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,9 +27,9 @@ class DraggableBottomSheetExample extends StatelessWidget {
   final String title;
 
   const DraggableBottomSheetExample({
-    Key? key,
+    super.key,
     required this.title,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -109,14 +109,14 @@ class DraggableBottomSheetExample extends StatelessWidget {
                     width: 50,
                     height: 50,
                     margin: const EdgeInsets.only(right: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                     child: Icon(
                       icon,
                       color: Colors.pink,
                       size: 40,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
                     ),
                   );
                 }).toList(),

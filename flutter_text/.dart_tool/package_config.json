@@ -146,6 +146,12 @@
       "languageVersion": "3.3"
     },
     {
+      "name": "flutter_colorpicker",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/flutter_colorpicker-1.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.14"
+    },
+    {
       "name": "flutter_lints",
       "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/flutter_lints-3.0.2",
       "packageUri": "lib/",
@@ -153,9 +159,9 @@
     },
     {
       "name": "flutter_plugin_android_lifecycle",
-      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/flutter_plugin_android_lifecycle-2.0.19",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/flutter_plugin_android_lifecycle-2.0.20",
       "packageUri": "lib/",
-      "languageVersion": "3.2"
+      "languageVersion": "3.4"
     },
     {
       "name": "flutter_test",
@@ -189,13 +195,13 @@
     },
     {
       "name": "irondash_engine_context",
-      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/irondash_engine_context-0.5.2",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/irondash_engine_context-0.5.4",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
     {
       "name": "irondash_message_channel",
-      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/irondash_message_channel-0.6.0",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/irondash_message_channel-0.7.0",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
@@ -242,6 +248,12 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "nested",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/nested-1.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "path",
       "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/path-1.9.0",
       "packageUri": "lib/",
@@ -255,15 +267,15 @@
     },
     {
       "name": "path_provider_android",
-      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/path_provider_android-2.2.4",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/path_provider_android-2.2.6",
       "packageUri": "lib/",
-      "languageVersion": "3.2"
+      "languageVersion": "3.4"
     },
     {
       "name": "path_provider_foundation",
-      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/path_provider_foundation-2.3.2",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/path_provider_foundation-2.4.0",
       "packageUri": "lib/",
-      "languageVersion": "3.0"
+      "languageVersion": "3.2"
     },
     {
       "name": "path_provider_linux",
@@ -291,15 +303,21 @@
     },
     {
       "name": "platform",
-      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/platform-3.1.4",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/platform-3.1.5",
       "packageUri": "lib/",
-      "languageVersion": "3.0"
+      "languageVersion": "3.2"
     },
     {
       "name": "plugin_platform_interface",
       "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/plugin_platform_interface-2.1.8",
       "packageUri": "lib/",
       "languageVersion": "3.0"
+    },
+    {
+      "name": "provider",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/provider-6.1.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
     },
     {
       "name": "sky_engine",
@@ -339,19 +357,19 @@
     },
     {
       "name": "super_clipboard",
-      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/super_clipboard-0.8.12",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/super_clipboard-0.8.17",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
     {
       "name": "super_drag_and_drop",
-      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/super_drag_and_drop-0.8.12",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/super_drag_and_drop-0.8.17",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
     {
       "name": "super_native_extensions",
-      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/super_native_extensions-0.8.12",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/super_native_extensions-0.8.17",
       "packageUri": "lib/",
       "languageVersion": "3.3"
     },
@@ -411,9 +429,9 @@
     },
     {
       "name": "win32",
-      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/win32-5.4.0",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/win32-5.5.1",
       "packageUri": "lib/",
-      "languageVersion": "3.3"
+      "languageVersion": "3.4"
     },
     {
       "name": "win32_registry",
@@ -434,10 +452,10 @@
       "languageVersion": "3.4"
     }
   ],
-  "generated": "2024-06-04T05:54:53.905042Z",
+  "generated": "2024-07-26T01:21:17.518807Z",
   "generator": "pub",
-  "generatorVersion": "3.4.1",
+  "generatorVersion": "3.4.4",
   "flutterRoot": "file:///opt/homebrew/Caskroom/flutter/3.19.3/flutter",
-  "flutterVersion": "3.22.1",
+  "flutterVersion": "3.22.3",
   "pubCache": "file:///Users/enril/.pub-cache"
 }

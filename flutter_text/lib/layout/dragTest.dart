@@ -2,22 +2,22 @@ import 'package:flutter/material.dart';
 
 // 앱 실행
 void main() {
-  runApp(MaterialApp(
+  runApp(const MaterialApp(
     home: MyApp(),
   ) // MaterialApp 감싸서 Context 분리
       );
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  Offset offset = Offset(0, 0); //x,y 좌표를 가지고 있는 오프셋 객체 생성
-  Offset offset2 = Offset(0, 0);
+  Offset offset = const Offset(0, 0); //x,y 좌표를 가지고 있는 오프셋 객체 생성
+  Offset offset2 = const Offset(0, 0);
 
   @override
   Widget build(BuildContext context) {
