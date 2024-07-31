@@ -57,33 +57,66 @@ class MainPageState extends State<MainPage> {
   Widget _buildWorkArea(DragDropProvider provider) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        return DragTarget<Object>(
-          builder: (context, candidateData, rejectedData) {
-            return Stack(
-              children: provider.droppedItems.map((item) => _buildPositionedItem(item, null, constraints)).toList(),
-            );
-          },
-          onAcceptWithDetails: (details) {
-            final RenderBox renderBox = context.findRenderObject() as RenderBox;
-            final localPosition = renderBox.globalToLocal(details.offset);
+        final viewportWidth = constraints.maxWidth;
+        final viewportHeight = constraints.maxHeight;
 
-            if (details.data is String) {
-              final newItem = _createItem(details.data as String, localPosition);
-              if (newItem != null) {
-                provider.addItem(newItem);
-              }
-            } else if (details.data is DroppedItem) {
-              final droppedItem = details.data as DroppedItem;
-              provider.updateItemPosition(droppedItem.data, localPosition);
-            }
-          },
+        double contentWidth = viewportWidth;
+        double contentHeight = viewportHeight;
+
+        for (var item in provider.droppedItems) {
+          contentWidth = math.max(contentWidth, item.position.dx + item.size.width + 100);
+          contentHeight = math.max(contentHeight, item.position.dy + item.size.height + 100);
+        }
+
+        return Container(
+          width: viewportWidth,
+          height: viewportHeight,
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.black, width: 1),
+          ),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: SizedBox(
+                width: contentWidth,
+                height: contentHeight,
+                child: DragTarget<Object>(
+                  builder: (context, candidateData, rejectedData) {
+                    return Stack(
+                      children: provider.droppedItems
+                          .map((item) => _buildPositionedItem(item, null, BoxConstraints(
+                        maxWidth: contentWidth,
+                        maxHeight: contentHeight,
+                      )))
+                          .toList(),
+                    );
+                  },
+                  onAcceptWithDetails: (details) {
+                    final RenderBox renderBox = context.findRenderObject() as RenderBox;
+                    final localPosition = renderBox.globalToLocal(details.offset);
+
+                    if (details.data is String) {
+                      final newItem = _createItem(details.data as String, localPosition);
+                      if (newItem != null) {
+                        provider.addItem(newItem);
+                      }
+                    } else if (details.data is DroppedItem) {
+                      final droppedItem = details.data as DroppedItem;
+                      provider.addItem(droppedItem.copyWith(position: localPosition));
+                    }
+                  },
+                ),
+              ),
+            ),
+          ),
         );
       },
     );
   }
 
   Widget _buildPositionedItem(DroppedItem item, String? parentContainerName, BoxConstraints constraints) {
-    final position = parentContainerName != null ? item.position : item.position;
+    final position = item.position;
 
     return Positioned(
       left: position.dx,
@@ -133,6 +166,8 @@ class MainPageState extends State<MainPage> {
       onDragStarted: () {
         if (parentContainerName != null) {
           provider.removeItemFromContainer(parentContainerName, item.data);
+        } else {
+          provider.removeItem(item.data);
         }
       },
       onDragEnd: (details) {
@@ -145,52 +180,34 @@ class MainPageState extends State<MainPage> {
             localPosition.dy.clamp(0, constraints.maxHeight - item.size.height),
           );
 
-          if (parentContainerName != null) {
-            // 컨테이너 내부 아이템의 경우 상대적 위치를 계산
-            final container = provider.getItem(parentContainerName);
-            if (container != null) {
-              final relativePosition = adjustedPosition - container.position;
-              provider.updateItemPositionInContainer(parentContainerName, item.data, relativePosition);
-            }
-          } else {
-            if (item.data.startsWith('Container')) {
-              provider.updateContainerAndChildrenPositions(item.data, adjustedPosition);
-            } else {
-              provider.updateItemPosition(item.data, adjustedPosition);
-            }
-          }
+          provider.addItem(item.copyWith(position: adjustedPosition));
         }
       },
-      child: ResizableWidget(
-        initialSize: item.size,
-        child: child,
-        onRemove: () {
-          if (parentContainerName != null) {
-            provider.removeItemFromContainer(parentContainerName, item.data);
-          } else {
-            provider.removeItem(item.data);
-          }
-          provider.unselectItem();
+      child: GestureDetector(
+        onTap: () {
+          provider.selectItem(item.data);
           setState(() {});
         },
-        onUpdatePosition: (newPosition) {
-          final adjustedPosition = Offset(
-            (item.position.dx + newPosition.dx).clamp(0, constraints.maxWidth - item.size.width),
-            (item.position.dy + newPosition.dy).clamp(0, constraints.maxHeight - item.size.height),
-          );
-          if (parentContainerName != null) {
-            provider.updateItemPositionInContainer(parentContainerName, item.data, adjustedPosition);
-          } else {
-            provider.updateItemPosition(item.data, adjustedPosition);
-          }
-        },
-        onResize: (newSize) {
-          if (parentContainerName != null) {
-            provider.updateItemSizeInContainer(parentContainerName, item.data, newSize);
-          } else {
-            provider.updateItemSize(item.data, newSize);
-          }
-        },
+        child: ResizableWidget(
+          initialSize: item.size,
+          child: child,
+          onRemove: () {
+            if (parentContainerName != null) {
+              provider.removeItemFromContainer(parentContainerName, item.data);
+            } else {
+              provider.removeItem(item.data);
+            }
+            provider.unselectItem();
+            setState(() {});
+          },
+          onResize: (newSize) {
+            if (parentContainerName != null) {
+              provider.updateItemSizeInContainer(parentContainerName, item.data, newSize);
+            } else {
+              provider.updateItemSize(item.data, newSize);
+            }
+          },
+        ),
       ),
     );
   }
@@ -198,7 +215,7 @@ class MainPageState extends State<MainPage> {
   Widget _buildDroppableContainer(DroppedItem containerItem, BoxConstraints parentConstraints) {
     final provider = Provider.of<DragDropProvider>(context, listen: false);
 
-    return DragTarget<DroppedItem>(
+    return DragTarget<Object>(
       builder: (context, candidateData, rejectedData) {
         return GestureDetector(
           onTap: () {
@@ -211,16 +228,12 @@ class MainPageState extends State<MainPage> {
             decoration: (containerItem.widget as Container).decoration,
             child: Stack(
               children: containerItem.children.map((child) {
-                return Positioned(
-                  left: child.position.dx,
-                  top: child.position.dy,
-                  child: _buildDraggableItem(
-                    child,
-                    containerItem.data,
-                    BoxConstraints(
-                      maxWidth: containerItem.size.width,
-                      maxHeight: containerItem.size.height,
-                    ),
+                return _buildPositionedItem(
+                  child,
+                  containerItem.data,
+                  BoxConstraints(
+                    maxWidth: containerItem.size.width,
+                    maxHeight: containerItem.size.height,
                   ),
                 );
               }).toList(),
@@ -232,16 +245,21 @@ class MainPageState extends State<MainPage> {
         final RenderBox renderBox = context.findRenderObject() as RenderBox;
         final localOffset = renderBox.globalToLocal(details.offset) - containerItem.position;
 
-        final draggedItemWidth = (details.data as DroppedItem).size.width;
-        final draggedItemHeight = (details.data as DroppedItem).size.height;
-
         final adjustedOffset = Offset(
-          localOffset.dx.clamp(0, math.max(0, containerItem.size.width - draggedItemWidth)),
-          localOffset.dy.clamp(0, math.max(0, containerItem.size.height - draggedItemHeight)),
+          localOffset.dx.clamp(0, containerItem.size.width - 50),  // 50은 아이템의 최소 너비로 가정
+          localOffset.dy.clamp(0, containerItem.size.height - 50),  // 50은 아이템의 최소 높이로 가정
         );
 
-        if (details.data != containerItem) {
-          provider.moveItemToContainer(details.data, containerItem.data, adjustedOffset);
+        if (details.data is String) {
+          final newItem = _createItem(details.data as String, adjustedOffset);
+          if (newItem != null) {
+            provider.addItemToContainer(newItem, containerItem.data, adjustedOffset);
+          }
+        } else if (details.data is DroppedItem) {
+          final draggedItem = details.data as DroppedItem;
+          if (draggedItem != containerItem) {
+            provider.addItemToContainer(draggedItem.copyWith(position: adjustedOffset), containerItem.data, adjustedOffset);
+          }
         }
       },
     );
@@ -403,7 +421,6 @@ class ResizableWidget extends StatefulWidget {
   final Widget child;
   final Size initialSize;
   final VoidCallback onRemove;
-  final Function(Offset) onUpdatePosition;
   final Function(Size) onResize;
 
   const ResizableWidget({
@@ -411,7 +428,6 @@ class ResizableWidget extends StatefulWidget {
     required this.child,
     required this.initialSize,
     required this.onRemove,
-    required this.onUpdatePosition,
     required this.onResize,
   }) : super(key: key);
 
@@ -460,7 +476,6 @@ class _ResizableWidgetState extends State<ResizableWidget> {
                 size = newSize;
               });
               widget.onResize(newSize);
-              widget.onUpdatePosition(Offset(0, 0));
             },
             child: Container(
               padding: EdgeInsets.all(2),

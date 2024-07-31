@@ -119,14 +119,11 @@ class DragDropProvider extends ChangeNotifier {
   void addItemToContainer(DroppedItem item, String containerName, Offset localOffset) {
     final container = _findItem(containerName);
     if (container != null) {
-      final newItem = DroppedItem(
-        key: item.key,
-        data: item.data,
-        position: localOffset,
-        size: item.size,
-        widget: item.widget,
-        children: List<DroppedItem>.from(item.children),
+      final adjustedOffset = Offset(
+        localOffset.dx.clamp(0, container.size.width - item.size.width),
+        localOffset.dy.clamp(0, container.size.height - item.size.height),
       );
+      final newItem = item.copyWith(position: adjustedOffset);
       container.children.add(newItem);
       notifyListeners();
     }
@@ -220,4 +217,39 @@ class DragDropProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  DroppedItem? _draggingItem;
+  String? _draggingItemParentContainer;
+
+  void startDragging(DroppedItem item) {
+    _draggingItem = item;
+    _draggingItemParentContainer = _findParentContainer(item);
+    if (_draggingItemParentContainer != null) {
+      removeItemFromContainer(_draggingItemParentContainer!, item.data);
+    } else {
+      removeItem(item.data);
+    }
+    notifyListeners();
+  }
+
+  void endDragging(Offset offset) {
+    if (_draggingItem != null) {
+      addItem(_draggingItem!.copyWith(position: offset));
+      _draggingItem = null;
+      _draggingItemParentContainer = null;
+      notifyListeners();
+    }
+  }
+
+  String? _findParentContainer(DroppedItem item) {
+    for (var containerItem in droppedItems) {
+      if (containerItem.data.startsWith('Container')) {
+        if (containerItem.children.any((child) => child.data == item.data)) {
+          return containerItem.data;
+        }
+      }
+    }
+    return null;
+  }
+
 }
