@@ -23,7 +23,6 @@ class MainPageState extends State<MainPage> {
       ),
       body: Row(
         children: [
-          // 컴포넌트 영역
           Expanded(
             flex: 1,
             child: Container(
@@ -32,7 +31,6 @@ class MainPageState extends State<MainPage> {
               child: Component(onDrop: (data) {}),
             ),
           ),
-          // 작업 영역
           Expanded(
             flex: 8,
             child: Container(
@@ -40,7 +38,6 @@ class MainPageState extends State<MainPage> {
               child: _buildWorkArea(provider),
             ),
           ),
-          // 속성 편집 패널
           if (provider.selectedItem != null)
             Expanded(
               flex: 2,
@@ -95,6 +92,7 @@ class MainPageState extends State<MainPage> {
                   onAcceptWithDetails: (details) {
                     final RenderBox renderBox = context.findRenderObject() as RenderBox;
                     final localPosition = renderBox.globalToLocal(details.offset);
+                    print('작업 영역 드롭 좌표: $localPosition');
 
                     if (details.data is String) {
                       final newItem = _createItem(details.data as String, localPosition);
@@ -103,7 +101,7 @@ class MainPageState extends State<MainPage> {
                       }
                     } else if (details.data is DroppedItem) {
                       final droppedItem = details.data as DroppedItem;
-                      provider.addItem(droppedItem.copyWith(position: localPosition));
+                      provider.moveItem(droppedItem.data, localPosition, null);
                     }
                   },
                 ),
@@ -116,11 +114,9 @@ class MainPageState extends State<MainPage> {
   }
 
   Widget _buildPositionedItem(DroppedItem item, String? parentContainerName, BoxConstraints constraints) {
-    final position = item.position;
-
     return Positioned(
-      left: position.dx,
-      top: position.dy,
+      left: item.position.dx,
+      top: item.position.dy,
       child: _buildDraggableItem(item, parentContainerName, constraints),
     );
   }
@@ -143,73 +139,76 @@ class MainPageState extends State<MainPage> {
             provider.selectItem(item.data);
             setState(() {});
           },
-          child: elevatedButton.child,
           style: elevatedButton.style,
+          child: elevatedButton.child,
         ),
       );
     } else {
       child = item.widget;
     }
 
-    return Draggable<DroppedItem>(
-      data: item,
-      feedback: Material(
-        child: Opacity(
-          opacity: 0.7,
+    return GestureDetector(
+      onTap: () {
+        if (provider.selectedItem?.data == item.data) {
+          provider.unselectItem();
+        } else {
+          provider.selectItem(item.data);
+        }
+        setState(() {});
+      },
+      child: Draggable<DroppedItem>(
+        data: item,
+        feedback: Material(
+          child: Opacity(
+            opacity: 0.7,
+            child: child,
+          ),
+        ),
+        childWhenDragging: Opacity(
+          opacity: 0.3,
           child: child,
         ),
-      ),
-      childWhenDragging: Opacity(
-        opacity: 0.3,
-        child: child,
-      ),
-      onDragStarted: () {
-        if (parentContainerName != null) {
-          provider.removeItemFromContainer(parentContainerName, item.data);
-        } else {
-          provider.removeItem(item.data);
-        }
-      },
-      onDragEnd: (details) {
-        if (!details.wasAccepted) {
-          final RenderBox renderBox = context.findRenderObject() as RenderBox;
-          final localPosition = renderBox.globalToLocal(details.offset);
+        onDragStarted: () {
+          provider.startDragging(item);
+        },
+        onDraggableCanceled: (_, __) {
+          provider.cancelDragging();
+        },
+        onDragEnd: (details) {
+          if (!details.wasAccepted) {
+            final RenderBox renderBox = context.findRenderObject() as RenderBox;
+            final localPosition = renderBox.globalToLocal(details.offset);
 
-          final adjustedPosition = Offset(
-            localPosition.dx.clamp(0, constraints.maxWidth - item.size.width),
-            localPosition.dy.clamp(0, constraints.maxHeight - item.size.height),
-          );
-
-          provider.addItem(item.copyWith(position: adjustedPosition));
-        }
-      },
-      child: GestureDetector(
-        onTap: () {
-          provider.selectItem(item.data);
-          setState(() {});
+            if (_isInWorkArea(localPosition, constraints)) {
+              Offset adjustedPosition = Offset(
+                localPosition.dx.clamp(0, constraints.maxWidth - item.size.width),
+                localPosition.dy.clamp(0, constraints.maxHeight - item.size.height),
+              );
+              provider.updateItemPosition(item.data, adjustedPosition, parentContainerName);
+            } else {
+              provider.cancelDragging();
+            }
+          }
         },
         child: ResizableWidget(
           initialSize: item.size,
           child: child,
           onRemove: () {
-            if (parentContainerName != null) {
-              provider.removeItemFromContainer(parentContainerName, item.data);
-            } else {
-              provider.removeItem(item.data);
-            }
+            provider.removeItem(item.data);
             provider.unselectItem();
             setState(() {});
           },
           onResize: (newSize) {
-            if (parentContainerName != null) {
-              provider.updateItemSizeInContainer(parentContainerName, item.data, newSize);
-            } else {
-              provider.updateItemSize(item.data, newSize);
-            }
+            provider.updateItemSize(item.data, newSize);
           },
         ),
       ),
     );
+  }
+
+  bool _isInWorkArea(Offset position, BoxConstraints constraints) {
+    return position.dx >= 0 && position.dx <= constraints.maxWidth &&
+        position.dy >= 0 && position.dy <= constraints.maxHeight;
   }
 
   Widget _buildDroppableContainer(DroppedItem containerItem, BoxConstraints parentConstraints) {
@@ -219,7 +218,11 @@ class MainPageState extends State<MainPage> {
       builder: (context, candidateData, rejectedData) {
         return GestureDetector(
           onTap: () {
-            provider.selectItem(containerItem.data);
+            if (provider.selectedItem?.data == containerItem.data) {
+              provider.unselectItem();
+            } else {
+              provider.selectItem(containerItem.data);
+            }
             setState(() {});
           },
           child: Container(
@@ -241,13 +244,16 @@ class MainPageState extends State<MainPage> {
           ),
         );
       },
+      onWillAccept: (data) {
+        return data is String || data is DroppedItem;
+      },
       onAcceptWithDetails: (details) {
         final RenderBox renderBox = context.findRenderObject() as RenderBox;
-        final localOffset = renderBox.globalToLocal(details.offset) - containerItem.position;
+        final localOffset = renderBox.globalToLocal(details.offset);
 
         final adjustedOffset = Offset(
-          localOffset.dx.clamp(0, containerItem.size.width - 50),  // 50은 아이템의 최소 너비로 가정
-          localOffset.dy.clamp(0, containerItem.size.height - 50),  // 50은 아이템의 최소 높이로 가정
+          (localOffset.dx - containerItem.position.dx).clamp(0, containerItem.size.width - 50),
+          (localOffset.dy - containerItem.position.dy).clamp(0, containerItem.size.height - 50),
         );
 
         if (details.data is String) {
@@ -256,10 +262,8 @@ class MainPageState extends State<MainPage> {
             provider.addItemToContainer(newItem, containerItem.data, adjustedOffset);
           }
         } else if (details.data is DroppedItem) {
-          final draggedItem = details.data as DroppedItem;
-          if (draggedItem != containerItem) {
-            provider.addItemToContainer(draggedItem.copyWith(position: adjustedOffset), containerItem.data, adjustedOffset);
-          }
+          final droppedItem = details.data as DroppedItem;
+          provider.moveItemToContainer(droppedItem.data, containerItem.data, adjustedOffset);
         }
       },
     );
@@ -476,6 +480,7 @@ class _ResizableWidgetState extends State<ResizableWidget> {
                 size = newSize;
               });
               widget.onResize(newSize);
+              print('Resized to: $newSize'); // 크기 조정 로깅 추가
             },
             child: Container(
               padding: EdgeInsets.all(2),

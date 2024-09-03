@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
       title: '드래그 앤 드롭 테스트',
       theme: ThemeData(
         primarySwatch: Colors.blue,
-        splashFactory: NoSplash.splashFactory, // 음영 효과 비활성화
+        splashFactory: NoSplash.splashFactory,
       ),
       home: const MainPage(),
     );
