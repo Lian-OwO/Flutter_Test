@@ -405,7 +405,7 @@
     },
     {
       "name": "uuid",
-      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/uuid-4.4.0",
+      "rootUri": "file:///Users/enril/.pub-cache/hosted/pub.dev/uuid-4.5.0",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
@@ -452,7 +452,7 @@
       "languageVersion": "3.4"
     }
   ],
-  "generated": "2024-07-26T01:21:17.518807Z",
+  "generated": "2024-09-05T06:24:39.438434Z",
   "generator": "pub",
   "generatorVersion": "3.4.4",
   "flutterRoot": "file:///opt/homebrew/Caskroom/flutter/3.19.3/flutter",
