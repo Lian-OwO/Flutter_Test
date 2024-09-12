@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart'; //ValueListenable 사용을 위한 호출
-import 'package:provider/provider.dart'; //프로바이더 사용
+import 'package:flutter/foundation.dart'; // ValueListenable 사용을 위한 호출
+import 'package:provider/provider.dart'; // 프로바이더 사용
 import '../providers/widget_provider.dart';
 import '../utils/color_map.dart';
 import '../models/widget_data.dart';
@@ -16,19 +16,19 @@ class PropertyPanel extends StatelessWidget {
       builder: (context, provider, child) {
         final selectedWidget = provider.selectedWidget;
 
-        // 패널이 보이지 않거나 선택된 위젯이 없으면 빈 컨테이너 반환
-        if (!provider.isPanelVisible || selectedWidget == null) {
-          return Container();
+        // 선택된 위젯이 없을 때 페이지 속성 패널 표시
+        if (selectedWidget == null) {
+          return _buildPageProperties(context, provider);
         }
 
-        // 속성 편집 패널 UI 구성
+        // 선택된 위젯이 있을 경우 속성 편집 패널 UI 구성
         return Container(
           padding: const EdgeInsets.all(8.0),
           color: Colors.grey[300],
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHeader(selectedWidget, provider),
+              _buildHeader(selectedWidget),
               const SizedBox(height: 10),
               Text('ID: ${selectedWidget.id}', style: const TextStyle(color: Colors.grey, fontSize: 12)),
               const SizedBox(height: 10),
@@ -46,16 +46,11 @@ class PropertyPanel extends StatelessWidget {
   }
 
   /// 패널 헤더 구성
-  Widget _buildHeader(WidgetData widget, WidgetProvider provider) {
+  Widget _buildHeader(WidgetData widget) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Text('Edit ${widget.type}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: provider.togglePanelVisibility,
-          tooltip: 'Close panel',
-        ),
       ],
     );
   }
@@ -160,4 +155,61 @@ class PropertyPanel extends StatelessWidget {
       child: const Text('Delete Widget'),
     );
   }
+
+  /// 기본 페이지 속성 패널
+  Widget _buildPageProperties(BuildContext context, WidgetProvider provider) {
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      color: Colors.grey[200],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Page Properties', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          SwitchListTile(
+            title: Text('Safe Area'),
+            value: provider.safeArea,
+            onChanged: (bool value) {
+              provider.toggleSafeArea(value);
+            },
+          ),
+          ListTile(
+            title: Text('Background Color'),
+            trailing: DropdownButton<Color>(
+            value: provider.backgroundColor,
+            onChanged: (newColor) {
+              if (newColor != null) {
+                provider.changeBackgroundColor(newColor);
+              }
+            },
+              items: getColorMap().entries.map((entry) {
+                return DropdownMenuItem<Color>(
+                  value: entry.value,
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 20,
+                        height: 20,
+                        color: entry.value,
+                      ),
+                      const SizedBox(width: 10),
+                      Text(entry.key),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+          const SizedBox(height: 10),
+          SwitchListTile(
+            title: Text('Show Navigation Bar'),
+            value: provider.showNavBar,
+            onChanged: (bool value) {
+              provider.toggleNavBar(value);
+            },
+          ),
+        ],
+      ),
+    );
+  }
 }
+

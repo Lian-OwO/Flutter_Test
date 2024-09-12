@@ -5,16 +5,22 @@ import '../models/widget_data.dart';
 class WidgetProvider extends ChangeNotifier {
   List<WidgetData> _widgets = [];
   WidgetData? _selectedWidget;
-  bool _isPanelVisible = false;
   bool _showCode = false;
   String? _draggingWidgetId;
   Offset? _dragStartPosition;
 
+  // 페이지 속성 추가
+  bool _safeArea = true;
+  Color _backgroundColor = Colors.white;
+  bool _showNavBar = true;
+
   // Getters
   List<WidgetData> get widgets => _widgets;
   WidgetData? get selectedWidget => _selectedWidget;
-  bool get isPanelVisible => _isPanelVisible;
   bool get showCode => _showCode;
+  bool get safeArea => _safeArea;
+  Color get backgroundColor => _backgroundColor;
+  bool get showNavBar => _showNavBar;
 
   /// 새 위젯 추가
   void addWidget(WidgetData widget) {
@@ -28,24 +34,13 @@ class WidgetProvider extends ChangeNotifier {
   void selectWidget(String id) {
     try {
       _selectedWidget = _widgets.firstWhere((widget) => widget.id == id);
-      _isPanelVisible = true;
       print('WidgetProvider: 위젯선택 (${_selectedWidget!.type}) uuid - $id'); //로그출력
       notifyListeners();
-    } catch(e) {
+    } catch (e) {
       print('WidgetProvider: 위젯을 찾을 수 없음 - $id');
       _selectedWidget = null;
-      _isPanelVisible = false;
       notifyListeners();
     }
-  }
-
-  /// 패널 가시성 토글
-  void togglePanelVisibility() {
-    _isPanelVisible = !_isPanelVisible;
-    if (!_isPanelVisible) {
-      _selectedWidget = null;
-    }
-    notifyListeners();
   }
 
   /// 코드/미리보기 전환
@@ -132,6 +127,7 @@ class WidgetProvider extends ChangeNotifier {
     }
   }
 
+
   /// 위젯 텍스트 업데이트
   void updateWidgetText(String id, String newText) {
     final index = _widgets.indexWhere((widget) => widget.id == id);
@@ -151,7 +147,6 @@ class WidgetProvider extends ChangeNotifier {
     _widgets.removeWhere((widget) => widget.id == id);
     if (_selectedWidget?.id == id) {
       _selectedWidget = null;
-      _isPanelVisible = false;
     }
     notifyListeners();
     print('WidgetProvider: 위젯삭제 uuid - $id');
@@ -176,4 +171,31 @@ class WidgetProvider extends ChangeNotifier {
   ValueNotifier<Color> getColorListenable(String id) {
     return ValueNotifier<Color>(_widgets.firstWhere((w) => w.id == id).color);
   }
+
+  // 페이지 속성 관리 메서드
+
+  /// SafeArea 설정 토글
+  void toggleSafeArea(bool value) {
+    _safeArea = value;
+    notifyListeners();
+  }
+
+  /// BackgroundColor 변경
+  // 배경 색상 업데이트 메서드
+  void changeBackgroundColor(Color color) {
+    _backgroundColor = color;
+    notifyListeners();
+  }
+
+  /// Navigation Bar 가시성 토글
+  void toggleNavBar(bool value) {
+    _showNavBar = value;
+    notifyListeners();
+  }
+  /// 선택된 위젯 해제
+  void clearSelectedWidget() {
+    _selectedWidget = null;
+    notifyListeners();
+  }
+
 }

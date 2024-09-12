@@ -24,12 +24,6 @@ class MainPage extends StatelessWidget {
               widgetProvider.toggleView();  // 미리보기/코드 전환
             },
           ),
-          // IconButton(
-          //   icon: const Icon(Icons.settings),
-          //   onPressed: () {
-          //     widgetProvider.togglePanelVisibility();  // 편집 패널 가시성 토글
-          //   },
-          // ),
         ],
       ),
       body: Column(
@@ -38,29 +32,27 @@ class MainPage extends StatelessWidget {
             child: Row(
               children: [
                 const Expanded(
-                    flex: 1,
-                    child: EditorPanel()
-                ),  // 위젯 편집 영역
+                  flex: 1,
+                  child: EditorPanel(),  // 위젯 편집 영역
+                ),
                 Container(
                   width: 1,
                   color: Colors.grey[300],
                 ),  // 세로 구분선 추가
                 Expanded(
-                  flex: widgetProvider.isPanelVisible ? 3 : 4,
+                  flex: 3,  // 미리보기 영역 비율 고정
                   child: widgetProvider.showCode
                       ? const CodeViewArea()  // 코드 뷰 영역
-                      : PreviewArea(isEditPanelOpen: widgetProvider.isPanelVisible),  // 미리보기 영역
+                      : PreviewArea(isEditPanelOpen: true),  // 항상 열려 있는 프로퍼티 패널과 함께 미리보기 영역을 보여줌
                 ),
-                if (widgetProvider.isPanelVisible)
-                  Container(
-                    width: 1,
-                    color: Colors.grey[300],
-                  ),  // 세로 구분선 추가
-                if (widgetProvider.isPanelVisible)  // 패널이 보일 때만 PropertyPanel을 렌더링
-                  const Expanded(
-                    flex: 1,
-                    child: PropertyPanel(),  // PropertyPanel 인자 없이 사용
-                  ),
+                Container(
+                  width: 1,
+                  color: Colors.grey[300],
+                ),  // 세로 구분선 추가
+                const Expanded(
+                  flex: 1,  // 프로퍼티 패널 항상 렌더링
+                  child: PropertyPanel(),  // 속성 편집 패널
+                ),
               ],
             ),
           ),

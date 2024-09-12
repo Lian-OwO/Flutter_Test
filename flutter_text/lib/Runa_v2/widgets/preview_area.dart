@@ -6,11 +6,9 @@ import '../models/widget_data.dart';
 
 /// PreviewArea 위젯: 사용자가 추가한 위젯들을 표시하고 상호작용할 수 있는 영역
 class PreviewArea extends StatefulWidget {
-  // 편집 패널의 상태를 전달받는 새로운 속성
-  final bool isEditPanelOpen;
+  final bool isEditPanelOpen; // 편집 패널의 상태를 전달받는 새로운 속성
 
   const PreviewArea({Key? key, required this.isEditPanelOpen}) : super(key: key);
-
 
   @override
   _PreviewAreaState createState() => _PreviewAreaState();
@@ -68,7 +66,14 @@ class _PreviewAreaState extends State<PreviewArea> {
               children: [
                 // 배경 영역 (드래그 앤 드롭을 위한 전체 영역)
                 Positioned.fill(
-                  child: Container(color: Colors.grey[200]),
+                  child: GestureDetector(
+                    onTap: () {
+                      // 빈 공간 클릭 시 선택된 위젯 해제
+                      provider.clearSelectedWidget();
+                    },
+                    //고정 색상에서 동적으로 변경
+                    child: Container(color: provider.backgroundColor),
+                  ),
                 ),
                 // 기존 위젯들
                 ...provider.widgets.map((widgetData) {
