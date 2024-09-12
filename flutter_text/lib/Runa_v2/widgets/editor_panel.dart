@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/widget_provider.dart';
+import '../models/widget_data.dart';
+
 
 class EditorPanel extends StatelessWidget {
   const EditorPanel({super.key});
@@ -22,7 +26,7 @@ class EditorPanel extends StatelessWidget {
 
   Widget _buildDraggableWidget(BuildContext context, String widgetType) {
     return Draggable<String>(
-      data: widgetType,  // 드래그할 데이터로 위젯 타입 전달
+      data: widgetType,
       feedback: Material(
         child: Opacity(
           opacity: 0.7,

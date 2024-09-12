@@ -1,158 +1,43 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter/foundation.dart'; //ValueListenable 사용을 위한 호출
+import 'package:provider/provider.dart'; //프로바이더 사용
 import '../providers/widget_provider.dart';
 import '../utils/color_map.dart';
+import '../models/widget_data.dart';
 
-class PropertyPanel extends StatefulWidget {
-  const PropertyPanel({super.key});
-
-  @override
-  _PropertyPanelState createState() => _PropertyPanelState();
-}
-
-class _PropertyPanelState extends State<PropertyPanel> {
-  late TextEditingController widthController;
-  late TextEditingController heightController;
-
-  @override
-  void initState() {
-    super.initState();
-    widthController = TextEditingController();
-    heightController = TextEditingController();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _updateControllers();  // 패널이 열릴 때마다 컨트롤러 값 업데이트
-  }
-
-  // 선택된 위젯의 가로, 세로 값을 텍스트 필드에 반영
-  void _updateControllers() {
-    final provider = Provider.of<WidgetProvider>(context, listen: false);
-    final widget = provider.selectedWidget;
-
-    if (widget != null) {
-      widthController.text = widget.width.toStringAsFixed(2);
-      heightController.text = widget.height.toStringAsFixed(2);
-    }
-  }
-
-  @override
-  void dispose() {
-    widthController.dispose();
-    heightController.dispose();
-    super.dispose();
-  }
-
-  // 가로값 업데이트 및 동기화 처리
-  void _updateWidth(String value) {
-    final newWidth = double.tryParse(value);
-    if (newWidth != null) {
-      final provider = Provider.of<WidgetProvider>(context, listen: false);
-      final widget = provider.selectedWidget;
-      if (widget != null) {
-        // 가로만 업데이트
-        provider.updateWidgetSize(widget.id, newWidth: newWidth);
-        setState(() {
-          widthController.text = newWidth.toStringAsFixed(2);  // 컨트롤러 값 반영
-        });
-      }
-    }
-  }
-
-  // 세로값 업데이트 및 동기화 처리
-  void _updateHeight(String value) {
-    final newHeight = double.tryParse(value);
-    if (newHeight != null) {
-      final provider = Provider.of<WidgetProvider>(context, listen: false);
-      final widget = provider.selectedWidget;
-      if (widget != null) {
-        // 세로만 업데이트
-        provider.updateWidgetSize(widget.id, newHeight: newHeight);
-        setState(() {
-          heightController.text = newHeight.toStringAsFixed(2);  // 컨트롤러 값 반영
-        });
-      }
-    }
-  }
-
-  // 색상 업데이트 및 동기화 처리
-  void _updateColor(Color? newColor) {
-    if (newColor != null) {
-      final provider = Provider.of<WidgetProvider>(context, listen: false);
-      final widget = provider.selectedWidget;
-      if (widget != null) {
-        provider.updateWidgetColor(widget.id, newColor);
-        setState(() {});  // 색상 변경 후 즉시 패널 업데이트
-      }
-    }
-  }
+/// PropertyPanel 위젯: 선택된 위젯의 속성을 편집하는 패널
+class PropertyPanel extends StatelessWidget {
+  const PropertyPanel({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    // WidgetProvider를 통해 위젯 상태 관리
     return Consumer<WidgetProvider>(
       builder: (context, provider, child) {
-        final widget = provider.selectedWidget;
+        final selectedWidget = provider.selectedWidget;
 
-        if (!provider.isPanelVisible || widget == null) {
-          return Container(); // 패널이 보이지 않거나 선택된 위젯이 없을 때 빈 컨테이너
+        // 패널이 보이지 않거나 선택된 위젯이 없으면 빈 컨테이너 반환
+        if (!provider.isPanelVisible || selectedWidget == null) {
+          return Container();
         }
 
+        // 속성 편집 패널 UI 구성
         return Container(
           padding: const EdgeInsets.all(8.0),
           color: Colors.grey[300],
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Edit ${widget.type}',
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () {
-                      provider.togglePanelVisibility();
-                    },
-                  ),
-                ],
-              ),
+              _buildHeader(selectedWidget, provider),
               const SizedBox(height: 10),
-              Text(
-                'ID: ${widget.id}',  // UUID를 표시
-                style: const TextStyle(color: Colors.grey, fontSize: 12),
-              ),
+              Text('ID: ${selectedWidget.id}', style: const TextStyle(color: Colors.grey, fontSize: 12)),
               const SizedBox(height: 10),
-              TextField(
-                controller: widthController,
-                decoration: const InputDecoration(labelText: 'Width'),
-                onSubmitted: _updateWidth,  // 값을 수정하고 엔터를 누르면 호출
-              ),
-              TextField(
-                controller: heightController,
-                decoration: const InputDecoration(labelText: 'Height'),
-                onSubmitted: _updateHeight,  // 값을 수정하고 엔터를 누르면 호출
-              ),
+              _buildDimensionFields(selectedWidget, provider),
+              _buildWidgetTextField(selectedWidget, provider),
               const SizedBox(height: 10),
-              // 색상 드롭다운
-              DropdownButton<Color>(
-                value: widget.color,
-                onChanged: _updateColor,  // 색상 선택 시 호출
-                items: _getColorItems(),
-              ),
+              _buildColorSelector(selectedWidget, provider),
               const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () {
-                  provider.removeWidget(widget.id);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                ),
-                child: const Text('Delete Widget'),
-              ),
+              _buildDeleteButton(selectedWidget, provider),
             ],
           ),
         );
@@ -160,23 +45,119 @@ class _PropertyPanelState extends State<PropertyPanel> {
     );
   }
 
-  List<DropdownMenuItem<Color>> _getColorItems() {
-    final colorMap = getColorMap();
-    return colorMap.entries.map((entry) {
-      return DropdownMenuItem<Color>(
-        value: entry.value,
-        child: Row(
-          children: [
-            Container(
-              width: 20,
-              height: 10,
-              color: entry.value,
-            ),
-            const SizedBox(width: 10),
-            Text(entry.key),
-          ],
+  /// 패널 헤더 구성
+  Widget _buildHeader(WidgetData widget, WidgetProvider provider) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text('Edit ${widget.type}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: provider.togglePanelVisibility,
+          tooltip: 'Close panel',
         ),
-      );
-    }).toList();
+      ],
+    );
+  }
+
+  /// 위젯 크기 조절 필드 구성
+  Widget _buildDimensionFields(WidgetData widget, WidgetProvider provider) {
+    return Column(
+      children: [
+        _buildValueListenableTextField(
+          valueListenable: provider.getWidthListenable(widget.id),
+          label: 'Width',
+          onSubmitted: (value) {
+            final newWidth = double.tryParse(value);
+            if (newWidth != null && newWidth > 10) {  // 최소값 체크
+              provider.updateWidgetSize(widget.id, newWidth: newWidth);
+            }
+          },
+        ),
+        _buildValueListenableTextField(
+          valueListenable: provider.getHeightListenable(widget.id),
+          label: 'Height',
+          onSubmitted: (value) {
+            final newHeight = double.tryParse(value);
+            if (newHeight != null && newHeight > 10) {  // 최소값 체크
+              provider.updateWidgetSize(widget.id, newHeight: newHeight);
+            }
+          },
+        ),
+      ],
+    );
+  }
+
+  /// ValueListenable을 사용한 텍스트 필드 생성
+  Widget _buildValueListenableTextField({
+    required ValueListenable<double> valueListenable,
+    required String label,
+    required Function(String) onSubmitted,
+  }) {
+    return ValueListenableBuilder<double>(
+      valueListenable: valueListenable,
+      builder: (context, value, child) {
+        return TextField(
+          decoration: InputDecoration(labelText: label),
+          controller: TextEditingController(text: value.toString()),
+          onSubmitted: onSubmitted,  // onChanged 대신 onSubmitted 사용
+          keyboardType: TextInputType.number,  // 숫자 키보드 사용
+        );
+      },
+    );
+  }
+
+  /// 위젯 텍스트 편집 필드 구성
+  Widget _buildWidgetTextField(WidgetData widget, WidgetProvider provider) {
+    return ValueListenableBuilder<String>(
+      valueListenable: provider.getTextListenable(widget.id),
+      builder: (context, value, child) {
+        return TextField(
+          decoration: const InputDecoration(labelText: 'Text'),
+          controller: TextEditingController(text: value),
+          onSubmitted: (newValue) {  // onChanged 대신 onSubmitted 사용
+            provider.updateWidgetText(widget.id, newValue);
+          },
+        );
+      },
+    );
+  }
+
+  /// 색상 선택기 구성
+  Widget _buildColorSelector(WidgetData widget, WidgetProvider provider) {
+    return ValueListenableBuilder<Color>(
+      valueListenable: provider.getColorListenable(widget.id),
+      builder: (context, color, child) {
+        return DropdownButton<Color>(
+          value: color,
+          onChanged: (newColor) {
+            if (newColor != null) {
+              provider.updateWidgetColor(widget.id, newColor);
+            }
+          },
+          items: getColorMap().entries.map((entry) {
+            return DropdownMenuItem<Color>(
+              value: entry.value,
+              child: Row(
+                children: [
+                  Container(width: 20, height: 20, color: entry.value),
+                  const SizedBox(width: 10),
+                  Text(entry.key),
+                ],
+              ),
+            );
+          }).toList(),
+        );
+      },
+    );
+  }
+
+  /// 삭제 버튼 구성
+  Widget _buildDeleteButton(WidgetData widget, WidgetProvider provider) {
+    return ElevatedButton(
+      onPressed: () => provider.removeWidget(widget.id),
+      style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+      child: const Text('Delete Widget'),
+    );
   }
 }
