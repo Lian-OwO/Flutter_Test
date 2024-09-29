@@ -28,13 +28,14 @@ class WidgetProvider extends ChangeNotifier {
     selectWidget(widget.id);
     notifyListeners();
     print('WidgetProvider: 위젯추가(${widget.type}) uuid - ${widget.id}, Width: ${widget.width}, Height: ${widget.height}, Color: ${widget.color}, Text: ${widget.text}');
+
   }
 
   /// 위젯 선택
   void selectWidget(String id) {
     try {
       _selectedWidget = _widgets.firstWhere((widget) => widget.id == id);
-      print('WidgetProvider: 위젯선택 (${_selectedWidget!.type}) uuid - $id'); //로그출력
+      print('WidgetProvider: 위젯선택 (${_selectedWidget!.type}) uuid - $id');
       notifyListeners();
     } catch (e) {
       print('WidgetProvider: 위젯을 찾을 수 없음 - $id');
@@ -127,7 +128,6 @@ class WidgetProvider extends ChangeNotifier {
     }
   }
 
-
   /// 위젯 텍스트 업데이트
   void updateWidgetText(String id, String newText) {
     final index = _widgets.indexWhere((widget) => widget.id == id);
@@ -142,6 +142,57 @@ class WidgetProvider extends ChangeNotifier {
     }
   }
 
+  void updateWidgetPosition(String id, Offset newPosition) {
+    final index = _widgets.indexWhere((widget) => widget.id == id);
+    if (index != -1) {
+      // 기존 위젯을 찾아서 위치만 업데이트하고, UUID를 변경하지 않음
+      _widgets[index] = _widgets[index].copyWith(position: newPosition);
+      notifyListeners();
+    } else {
+      print('Widget with id $id not found, cannot update position.');
+    }
+  }
+
+  /// 코드에서 위젯 업데이트
+  void updateWidgetsFromCode(List<WidgetData> newWidgets) {
+    print("Updating widgets from code. Current widgets: ${_widgets.length}, New widgets: ${newWidgets.length}");
+
+    // 기존 위젯의 ID를 보존하기 위한 맵
+    Map<String, WidgetData> existingWidgetsMap = {for (var w in _widgets) w.id: w};
+
+    _widgets = newWidgets.map((newWidget) {
+      WidgetData? existingWidget = existingWidgetsMap[newWidget.id];
+
+      if (existingWidget != null) {
+        print("Updating existing widget - ID: ${existingWidget.id}");
+        return existingWidget.copyWith(
+          position: newWidget.position,
+          width: newWidget.width,
+          height: newWidget.height,
+          color: newWidget.color,
+          text: newWidget.text,
+        );
+      } else {
+        print("Adding new widget - ID: ${newWidget.id}");
+        return newWidget;
+      }
+    }).toList();
+
+    // 선택된 위젯 업데이트
+    if (_selectedWidget != null) {
+      _selectedWidget = _widgets.firstWhere(
+            (w) => w.id == _selectedWidget!.id,
+        orElse: () {
+          print("Selected widget not found after update - ID: ${_selectedWidget!.id}");
+          return _selectedWidget!;
+        },
+      );
+    }
+
+    notifyListeners();
+    print("Widget update completed. Total widgets: ${_widgets.length}");
+  }
+
   /// 위젯 삭제
   void removeWidget(String id) {
     _widgets.removeWhere((widget) => widget.id == id);
@@ -152,24 +203,40 @@ class WidgetProvider extends ChangeNotifier {
     print('WidgetProvider: 위젯삭제 uuid - $id');
   }
 
-  /// 위젯 너비에 대한 ValueListenable 반환
   ValueNotifier<double> getWidthListenable(String id) {
-    return ValueNotifier<double>(_widgets.firstWhere((w) => w.id == id).width);
+    try {
+      return ValueNotifier<double>(_widgets.firstWhere((w) => w.id == id).width);
+    } catch (e) {
+      print('Widget with id $id not found. Returning default width.');
+      return ValueNotifier<double>(100.0); // 기본 너비 값
+    }
   }
 
-  /// 위젯 높이에 대한 ValueListenable 반환
   ValueNotifier<double> getHeightListenable(String id) {
-    return ValueNotifier<double>(_widgets.firstWhere((w) => w.id == id).height);
+    try {
+      return ValueNotifier<double>(_widgets.firstWhere((w) => w.id == id).height);
+    } catch (e) {
+      print('Widget with id $id not found. Returning default height.');
+      return ValueNotifier<double>(50.0); // 기본 높이 값
+    }
   }
 
-  /// 위젯 텍스트에 대한 ValueListenable 반환
   ValueNotifier<String> getTextListenable(String id) {
-    return ValueNotifier<String>(_widgets.firstWhere((w) => w.id == id).text ?? '');
+    try {
+      return ValueNotifier<String>(_widgets.firstWhere((w) => w.id == id).text ?? '');
+    } catch (e) {
+      print('Widget with id $id not found. Returning empty string.');
+      return ValueNotifier<String>('');
+    }
   }
 
-  /// 위젯 색상에 대한 ValueListenable 반환
   ValueNotifier<Color> getColorListenable(String id) {
-    return ValueNotifier<Color>(_widgets.firstWhere((w) => w.id == id).color);
+    try {
+      return ValueNotifier<Color>(_widgets.firstWhere((w) => w.id == id).color);
+    } catch (e) {
+      print('Widget with id $id not found. Returning default color.');
+      return ValueNotifier<Color>(Colors.blue); // 기본 색상 값
+    }
   }
 
   // 페이지 속성 관리 메서드
@@ -181,7 +248,6 @@ class WidgetProvider extends ChangeNotifier {
   }
 
   /// BackgroundColor 변경
-  // 배경 색상 업데이트 메서드
   void changeBackgroundColor(Color color) {
     _backgroundColor = color;
     notifyListeners();
@@ -192,10 +258,61 @@ class WidgetProvider extends ChangeNotifier {
     _showNavBar = value;
     notifyListeners();
   }
+
   /// 선택된 위젯 해제
   void clearSelectedWidget() {
     _selectedWidget = null;
     notifyListeners();
   }
 
+  /// 코드로부터 기존 위젯만 업데이트
+  void updateExistingWidgetsFromCode(List<WidgetData> updatedWidgets) {
+    for (var updatedWidget in updatedWidgets) {
+      final index = _widgets.indexWhere((w) => w.id == updatedWidget.id);
+      if (index != -1) {
+        // 기존 위젯 업데이트
+        _widgets[index] = _widgets[index].copyWith(
+          text: updatedWidget.text,
+          color: updatedWidget.color,
+          width: updatedWidget.width,
+          height: updatedWidget.height,
+          // position은 유지
+        );
+      }
+      // 새 위젯은 추가하지 않음
+    }
+
+    // 선택된 위젯 업데이트
+    if (_selectedWidget != null) {
+      _selectedWidget = _widgets.firstWhere(
+            (w) => w.id == _selectedWidget!.id,
+        orElse: () => _selectedWidget!, // 선택된 위젯이 없어졌다면 그대로 유지
+      );
+    }
+
+    notifyListeners();
+  }
+
+  /// 위젯 설정 (기존 메서드 유지)
+  void setWidgets(List<WidgetData> newWidgets) {
+    for (var newWidget in newWidgets) {
+      final existingIndex = _widgets.indexWhere((widget) => widget.id == newWidget.id);
+
+      if (existingIndex != -1) {
+        // 기존 위젯이 있으면 속성만 업데이트
+        print('기존 위젯 업데이트: ${newWidget.id}');
+        _widgets[existingIndex] = _widgets[existingIndex].copyWith(
+          position: newWidget.position,
+          width: newWidget.width,
+          height: newWidget.height,
+          color: newWidget.color,
+          text: newWidget.text,
+        );
+      } else {
+        // 새로운 위젯은 추가하지 않음
+        print('새 위젯 추가 시도 무시: ${newWidget.id}');
+      }
+    }
+    notifyListeners();  // 상태 변경 알림
+  }
 }

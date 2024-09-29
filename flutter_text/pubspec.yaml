@@ -60,6 +60,7 @@ dev_dependencies:
   provider: ^6.1.2
   flutter_colorpicker: ^1.0.3
   uuid: ^4.5.0
+  analyzer: ^5.2.0 #dart코드 검증을 위한 의존
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

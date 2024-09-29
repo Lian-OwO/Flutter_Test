@@ -1,27 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart'; // ValueListenable 사용을 위한 호출
-import 'package:provider/provider.dart'; // 프로바이더 사용
+import 'package:flutter/foundation.dart';
+import 'package:provider/provider.dart';
 import '../providers/widget_provider.dart';
-import '../utils/color_map.dart';
+import '../utils/color_map.dart' as color_utils;
 import '../models/widget_data.dart';
 
-/// PropertyPanel 위젯: 선택된 위젯의 속성을 편집하는 패널
 class PropertyPanel extends StatelessWidget {
   const PropertyPanel({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // WidgetProvider를 통해 위젯 상태 관리
     return Consumer<WidgetProvider>(
       builder: (context, provider, child) {
         final selectedWidget = provider.selectedWidget;
 
-        // 선택된 위젯이 없을 때 페이지 속성 패널 표시
         if (selectedWidget == null) {
           return _buildPageProperties(context, provider);
         }
 
-        // 선택된 위젯이 있을 경우 속성 편집 패널 UI 구성
         return Container(
           padding: const EdgeInsets.all(8.0),
           color: Colors.grey[300],
@@ -45,7 +41,6 @@ class PropertyPanel extends StatelessWidget {
     );
   }
 
-  /// 패널 헤더 구성
   Widget _buildHeader(WidgetData widget) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -55,7 +50,6 @@ class PropertyPanel extends StatelessWidget {
     );
   }
 
-  /// 위젯 크기 조절 필드 구성
   Widget _buildDimensionFields(WidgetData widget, WidgetProvider provider) {
     return Column(
       children: [
@@ -64,7 +58,7 @@ class PropertyPanel extends StatelessWidget {
           label: 'Width',
           onSubmitted: (value) {
             final newWidth = double.tryParse(value);
-            if (newWidth != null && newWidth > 10) {  // 최소값 체크
+            if (newWidth != null && newWidth > 10) {
               provider.updateWidgetSize(widget.id, newWidth: newWidth);
             }
           },
@@ -74,7 +68,7 @@ class PropertyPanel extends StatelessWidget {
           label: 'Height',
           onSubmitted: (value) {
             final newHeight = double.tryParse(value);
-            if (newHeight != null && newHeight > 10) {  // 최소값 체크
+            if (newHeight != null && newHeight > 10) {
               provider.updateWidgetSize(widget.id, newHeight: newHeight);
             }
           },
@@ -83,7 +77,6 @@ class PropertyPanel extends StatelessWidget {
     );
   }
 
-  /// ValueListenable을 사용한 텍스트 필드 생성
   Widget _buildValueListenableTextField({
     required ValueListenable<double> valueListenable,
     required String label,
@@ -95,14 +88,13 @@ class PropertyPanel extends StatelessWidget {
         return TextField(
           decoration: InputDecoration(labelText: label),
           controller: TextEditingController(text: value.toString()),
-          onSubmitted: onSubmitted,  // onChanged 대신 onSubmitted 사용
-          keyboardType: TextInputType.number,  // 숫자 키보드 사용
+          onSubmitted: onSubmitted,
+          keyboardType: TextInputType.number,
         );
       },
     );
   }
 
-  /// 위젯 텍스트 편집 필드 구성
   Widget _buildWidgetTextField(WidgetData widget, WidgetProvider provider) {
     return ValueListenableBuilder<String>(
       valueListenable: provider.getTextListenable(widget.id),
@@ -110,7 +102,7 @@ class PropertyPanel extends StatelessWidget {
         return TextField(
           decoration: const InputDecoration(labelText: 'Text'),
           controller: TextEditingController(text: value),
-          onSubmitted: (newValue) {  // onChanged 대신 onSubmitted 사용
+          onSubmitted: (newValue) {
             provider.updateWidgetText(widget.id, newValue);
           },
         );
@@ -118,36 +110,6 @@ class PropertyPanel extends StatelessWidget {
     );
   }
 
-  /// 색상 선택기 구성
-  Widget _buildColorSelector(WidgetData widget, WidgetProvider provider) {
-    return ValueListenableBuilder<Color>(
-      valueListenable: provider.getColorListenable(widget.id),
-      builder: (context, color, child) {
-        return DropdownButton<Color>(
-          value: color,
-          onChanged: (newColor) {
-            if (newColor != null) {
-              provider.updateWidgetColor(widget.id, newColor);
-            }
-          },
-          items: getColorMap().entries.map((entry) {
-            return DropdownMenuItem<Color>(
-              value: entry.value,
-              child: Row(
-                children: [
-                  Container(width: 20, height: 20, color: entry.value),
-                  const SizedBox(width: 10),
-                  Text(entry.key),
-                ],
-              ),
-            );
-          }).toList(),
-        );
-      },
-    );
-  }
-
-  /// 삭제 버튼 구성
   Widget _buildDeleteButton(WidgetData widget, WidgetProvider provider) {
     return ElevatedButton(
       onPressed: () => provider.removeWidget(widget.id),
@@ -156,8 +118,67 @@ class PropertyPanel extends StatelessWidget {
     );
   }
 
-  /// 기본 페이지 속성 패널
+  Widget _buildColorSelector(WidgetData widget, WidgetProvider provider) {
+    final colorMap = color_utils.getColorMap();
+    return ValueListenableBuilder<Color>(
+      valueListenable: provider.getColorListenable(widget.id),
+      builder: (context, color, child) {
+        String selectedColorName = 'Custom';
+        for (var entry in colorMap.entries) {
+          if (entry.value == color) {
+            selectedColorName = entry.key;
+            break;
+          }
+        }
+
+        return DropdownButton<String>(
+          value: selectedColorName,
+          items: [
+            ...colorMap.keys.map((String name) {
+              return DropdownMenuItem<String>(
+                value: name,
+                child: Row(
+                  children: [
+                    Container(
+                      width: 20,
+                      height: 20,
+                      color: colorMap[name],
+                      margin: EdgeInsets.only(right: 8),
+                    ),
+                    Text(name),
+                  ],
+                ),
+              );
+            }),
+            if (selectedColorName == 'Custom')
+              DropdownMenuItem<String>(
+                value: 'Custom',
+                child: Row(
+                  children: [
+                    Container(
+                      width: 20,
+                      height: 20,
+                      color: color,
+                      margin: EdgeInsets.only(right: 8),
+                    ),
+                    Text('Custom'),
+                  ],
+                ),
+              ),
+          ],
+          onChanged: (String? newValue) {
+            if (newValue != null) {
+              Color newColor = colorMap[newValue] ?? color;
+              provider.updateWidgetColor(widget.id, newColor);
+            }
+          },
+        );
+      },
+    );
+  }
+
   Widget _buildPageProperties(BuildContext context, WidgetProvider provider) {
+    final colorMap = color_utils.getColorMap();
     return Container(
       padding: const EdgeInsets.all(8.0),
       color: Colors.grey[200],
@@ -175,13 +196,13 @@ class PropertyPanel extends StatelessWidget {
           ListTile(
             title: Text('Background Color'),
             trailing: DropdownButton<Color>(
-            value: provider.backgroundColor,
-            onChanged: (newColor) {
-              if (newColor != null) {
-                provider.changeBackgroundColor(newColor);
-              }
-            },
-              items: getColorMap().entries.map((entry) {
+              value: provider.backgroundColor,
+              onChanged: (newColor) {
+                if (newColor != null) {
+                  provider.changeBackgroundColor(newColor);
+                }
+              },
+              items: colorMap.entries.map((entry) {
                 return DropdownMenuItem<Color>(
                   value: entry.value,
                   child: Row(
@@ -212,4 +233,3 @@ class PropertyPanel extends StatelessWidget {
     );
   }
 }
-

@@ -209,7 +209,11 @@ class _PreviewAreaState extends State<PreviewArea> {
     }
     return const SizedBox.shrink();
   }
+
+
+
 }
+
 
 /// 크기 조절 방향을 정의하는 열거형
 enum ResizeDirection { horizontal, vertical }

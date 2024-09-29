@@ -5,6 +5,7 @@ import 'widgets/preview_area.dart';
 import 'widgets/property_panel.dart';
 import 'providers/widget_provider.dart';
 import 'widgets/code_view_area.dart';
+import 'providers/code_import_export_provider.dart';
 
 class MainPage extends StatelessWidget {
   const MainPage({super.key});
@@ -12,6 +13,7 @@ class MainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final widgetProvider = Provider.of<WidgetProvider>(context);
+    final codeImportExportProvider = Provider.of<CodeImportExportProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -24,6 +26,14 @@ class MainPage extends StatelessWidget {
               widgetProvider.toggleView();  // 미리보기/코드 전환
             },
           ),
+    IconButton(
+    icon: const Icon(Icons.file_upload),
+      onPressed: () => codeImportExportProvider.exportCode(context),
+    ),
+    IconButton(
+    icon: const Icon(Icons.file_download),
+      onPressed: () => codeImportExportProvider.exportCode(context),
+    ),
         ],
       ),
       body: Column(
@@ -51,7 +61,7 @@ class MainPage extends StatelessWidget {
                 ),  // 세로 구분선 추가
                 const Expanded(
                   flex: 1,  // 프로퍼티 패널 항상 렌더링
-                  child: PropertyPanel(),  // 속성 편집 패널
+                  child: PropertyPanel(key: ValueKey('propertyPanel')),  // 속성 편집 패널
                 ),
               ],
             ),
