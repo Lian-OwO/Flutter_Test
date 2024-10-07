@@ -20,19 +20,16 @@ class _PreviewAreaState extends State<PreviewArea> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<WidgetProvider>(context);
-
     return LayoutBuilder(
       builder: (context, constraints) {
         final currentSize = Size(constraints.maxWidth, constraints.maxHeight);
 
-        // 편집 패널 상태가 변경되었는지 확인
         bool editPanelStateChanged = _previousEditPanelState != null &&
             _previousEditPanelState != widget.isEditPanelOpen;
 
-        // 크기 변경 감지 및 위젯 위치 조정 (편집 패널 상태 변경이 아닐 때만)
         if (_previousSize != null && _previousSize != currentSize && !editPanelStateChanged) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
+            final provider = Provider.of<WidgetProvider>(context, listen: false);
             _adjustWidgetPositions(provider, _previousSize!, currentSize);
           });
         }
@@ -40,50 +37,49 @@ class _PreviewAreaState extends State<PreviewArea> {
         _previousSize = currentSize;
         _previousEditPanelState = widget.isEditPanelOpen;
 
-        return DragTarget<String>(
-          onWillAccept: (data) => true,
-          onAcceptWithDetails: (details) {
-            final RenderBox renderBox = context.findRenderObject() as RenderBox;
-            final Offset localPosition = renderBox.globalToLocal(details.offset);
+        return Consumer<WidgetProvider>(
+          builder: (context, provider, child) {
+            return DragTarget<String>(
+              onWillAccept: (data) => true,
+              onAcceptWithDetails: (details) {
+                final RenderBox renderBox = context.findRenderObject() as RenderBox;
+                final Offset localPosition = renderBox.globalToLocal(details.offset);
 
-            // PreviewArea 내부의 상대적인 위치를 계산합니다.
-            final Offset dropPosition = Offset(
-              localPosition.dx.clamp(0, constraints.maxWidth),
-              localPosition.dy.clamp(0, constraints.maxHeight),
-            );
+                final Offset dropPosition = Offset(
+                  localPosition.dx.clamp(0, constraints.maxWidth),
+                  localPosition.dy.clamp(0, constraints.maxHeight),
+                );
 
-            provider.addWidget(WidgetData(
-              type: details.data!,
-              position: dropPosition,
-              width: details.data == 'Button' ? 100 : 150,
-              height: details.data == 'Button' ? 50 : 100,
-              color: details.data == 'Button' ? Colors.blue : Colors.green,
-              text: details.data == 'Button' ? 'New Button' : 'New Container',
-            ));
-          },
-          builder: (context, candidateData, rejectedData) {
-            return Stack(
-              children: [
-                // 배경 영역 (드래그 앤 드롭을 위한 전체 영역)
-                Positioned.fill(
-                  child: GestureDetector(
-                    onTap: () {
-                      // 빈 공간 클릭 시 선택된 위젯 해제
-                      provider.clearSelectedWidget();
-                    },
-                    //고정 색상에서 동적으로 변경
-                    child: Container(color: provider.backgroundColor),
-                  ),
-                ),
-                // 기존 위젯들
-                ...provider.widgets.map((widgetData) {
-                  return Positioned(
-                    left: widgetData.position.dx,
-                    top: widgetData.position.dy,
-                    child: _buildDraggableWidget(context, widgetData, provider, constraints),
-                  );
-                }).toList(),
-              ],
+                provider.addWidget(WidgetData(
+                  type: details.data!,
+                  position: dropPosition,
+                  width: details.data == 'Button' ? 100 : 150,
+                  height: details.data == 'Button' ? 50 : 100,
+                  color: details.data == 'Button' ? Colors.blue : Colors.green,
+                  text: details.data == 'Button' ? 'New Button' : 'New Container',
+                ));
+              },
+              builder: (context, candidateData, rejectedData) {
+                return Stack(
+                  children: [
+                    Positioned.fill(
+                      child: GestureDetector(
+                        onTap: () {
+                          provider.clearSelectedWidget();
+                        },
+                        child: Container(color: provider.backgroundColor),
+                      ),
+                    ),
+                    ...provider.widgets.map((widgetData) {
+                      return Positioned(
+                        left: widgetData.position.dx,
+                        top: widgetData.position.dy,
+                        child: _buildDraggableWidget(context, widgetData, provider, constraints),
+                      );
+                    }).toList(),
+                  ],
+                );
+              },
             );
           },
         );
@@ -177,13 +173,20 @@ class _PreviewAreaState extends State<PreviewArea> {
     final isSelected = provider.selectedWidget?.id == widgetData.id;
     final borderSide = isSelected ? BorderSide(color: Colors.red, width: 2) : BorderSide.none;
 
+    TextStyle textStyle = TextStyle(
+      fontSize: widgetData.fontSize, //폰트 사이즈 반영
+      color: widgetData.textColor, //폰트 컬러 반영
+      fontFamily: widgetData.fontFamily, //폰트 변경 반영
+      fontWeight: widgetData.isBold ? FontWeight.bold : FontWeight.normal,  // bold 적용
+      fontStyle: widgetData.isItalic ? FontStyle.italic : FontStyle.normal,  // italic 적용
+    );
+
     if (widgetData.type == 'Button') {
       return SizedBox(
         width: widgetData.width,
         height: widgetData.height,
         child: ElevatedButton(
           onPressed: () {
-            print('Button pressed: ${widgetData.id}');
             provider.selectWidget(widgetData.id);
           },
           style: ElevatedButton.styleFrom(
@@ -193,7 +196,10 @@ class _PreviewAreaState extends State<PreviewArea> {
               side: borderSide,
             ),
           ),
-          child: Text(widgetData.text ?? 'Button'),
+          child: Text(
+            widgetData.text ?? 'Button',
+            style: textStyle,
+          ),
         ),
       );
     } else if (widgetData.type == 'Container') {
@@ -204,11 +210,17 @@ class _PreviewAreaState extends State<PreviewArea> {
           color: widgetData.color,
           border: Border.fromBorderSide(borderSide),
         ),
-        child: Center(child: Text(widgetData.text ?? 'Container')),
+        child: Center(
+          child: Text(
+            widgetData.text ?? 'Container',
+            style: textStyle,
+          ),
+        ),
       );
     }
     return const SizedBox.shrink();
   }
+
 
 
 

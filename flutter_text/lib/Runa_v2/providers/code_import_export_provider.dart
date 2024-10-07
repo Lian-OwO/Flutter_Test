@@ -5,11 +5,13 @@ import 'widget_provider.dart';
 import '../models/widget_data.dart';
 import 'package:uuid/uuid.dart';
 
+/// CodeImportExportProvider 클래스: 코드 가져오기/내보내기 및 파싱을 담당
 class CodeImportExportProvider with ChangeNotifier {
   final WidgetProvider widgetProvider;
 
   CodeImportExportProvider(this.widgetProvider);
 
+  /// 전체 Dart 코드 생성
   String generateFullDartCode() {
     final buffer = StringBuffer();
     buffer.writeln("import 'package:flutter/material.dart';");
@@ -38,11 +40,28 @@ class CodeImportExportProvider with ChangeNotifier {
     return buffer.toString();
   }
 
+  /// 개별 위젯의 코드 생성
   String _generateWidgetCode(WidgetData widget) {
+    // 텍스트 이스케이프 처리
+    String escapedText = widget.text.replaceAll("'", r"\'").replaceAll('\n', r'\n');
+
+    final textStyle = '''
+    style: TextStyle(
+      fontSize: ${widget.fontSize},
+      color: Color(0x${widget.textColor.value.toRadixString(16).padLeft(8, '0')}),
+      fontWeight: ${widget.isBold ? 'FontWeight.bold' : 'FontWeight.normal'},
+      fontStyle: ${widget.isItalic ? 'FontStyle.italic' : 'FontStyle.normal'},
+      fontFamily: '${widget.fontFamily}',
+    )
+  ''';
+
     if (widget.type == 'Button') {
       return '''ElevatedButton(
               onPressed: () {},
-              child: Text('${widget.text}'),
+              child: Text(
+                '$escapedText',
+                $textStyle,
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0x${widget.color.value.toRadixString(16)
           .padLeft(8, '0')}),
@@ -55,12 +74,17 @@ class CodeImportExportProvider with ChangeNotifier {
               height: ${widget.height},
               color: Color(0x${widget.color.value.toRadixString(16).padLeft(
           8, '0')}),
-              child: Center(child: Text('${widget.text}')),
+              child: Center(
+                child: Text(
+                  '$escapedText',
+                  $textStyle,
+                ),
+              ),
             ) // ID: ${widget.id}''';
     }
     return 'SizedBox.shrink() // ID: ${widget.id}';
   }
-
+  /// 코드를 파일로 내보내기
   Future<void> exportCode(BuildContext context) async {
     try {
       String? outputFile = await FilePicker.platform.saveFile(
@@ -83,6 +107,7 @@ class CodeImportExportProvider with ChangeNotifier {
     }
   }
 
+  /// 파일에서 코드 가져오기
   Future<void> importCode(BuildContext context) async {
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -106,15 +131,25 @@ class CodeImportExportProvider with ChangeNotifier {
     }
   }
 
+  void updateWidgetsFromCode(String code) {
+    final widgets = parseCodeToWidgets(code);
+    print("Parsed ${widgets.length} widgets from code");
+    widgets.forEach((w) => print("Parsed widget: ID=${w.id}, Text='${w.text}'"));
+    widgetProvider.updateWidgetsFromCode(widgets);
+  }
+
+  /// 코드를 파싱하여 WidgetData 객체 리스트로 변환
   List<WidgetData> parseCodeToWidgets(String code) {
     List<WidgetData> parsedWidgets = [];
+
+    // Positioned 위젯의 정규 표현식
     RegExp widgetRegex = RegExp(
-        r'''Positioned\(\s*'''
-        r'''left:\s*([\d.]+),\s*'''
-        r'''top:\s*([\d.]+),\s*'''
-        r'''child:\s*(Container|ElevatedButton)\('''
-        r'''(?:[^)]+)\)'''
-        r'''.*?\/\/\s*ID:\s*([a-f0-9-]+)''',
+        r'Positioned\(\s*'
+        r'left:\s*([\d.]+),\s*'
+        r'top:\s*([\d.]+),\s*'
+        r'child:\s*(Container|ElevatedButton)\('
+        r'(?:[^)]+)\)'
+        r'.*?//\s*ID:\s*([a-f0-9-]+)',
         multiLine: true,
         dotAll: true
     );
@@ -128,23 +163,42 @@ class CodeImportExportProvider with ChangeNotifier {
       String id = match.group(4)!;
 
       String widgetContent = match.group(0)!;
-      RegExp textRegex = RegExp(r'''Text\(['"](.+?)['"]''');
-      RegExp colorRegex = RegExp(r'''Color\(0x([0-9A-Fa-f]+)\)''');
-      RegExp sizeRegex = RegExp(
-          r'''(?:width|fixedSize: Size)\(([\d.]+),\s*([\d.]+)\)''');
 
+      // 정규 표현식을 이용하여 위젯의 세부 정보를 파싱
+      RegExp textRegex = RegExp("Text\\(\\s*['\"](.+?)['\"]", dotAll: true);
+      RegExp colorRegex = RegExp(r'Color\(0x([0-9A-Fa-f]+)\)');
+      RegExp sizeRegex = RegExp(r'(?:width|fixedSize: Size)\(([\d.]+),\s*([\d.]+)\)');
+      RegExp fontSizeRegex = RegExp(r'fontSize:\s*([\d.]+)');
+      RegExp fontWeightRegex = RegExp(r'fontWeight:\s*FontWeight\.(\w+)');
+      RegExp fontStyleRegex = RegExp(r'fontStyle:\s*FontStyle\.(\w+)');
+      RegExp fontFamilyRegex = RegExp("fontFamily:\\s*['\"](.+?)['\"]");
+
+      // 값 추출 (null-safe 처리 추가)
       String text = textRegex.firstMatch(widgetContent)?.group(1) ?? '';
-      Color color = Color(int.parse(
-          colorRegex.firstMatch(widgetContent)?.group(1) ?? 'FF000000',
-          radix: 16));
-      double width = double.parse(
-          sizeRegex.firstMatch(widgetContent)?.group(1) ?? '100');
-      double height = double.parse(
-          sizeRegex.firstMatch(widgetContent)?.group(2) ?? '50');
+      String? colorValue = colorRegex.allMatches(widgetContent).isNotEmpty
+          ? colorRegex.allMatches(widgetContent).elementAt(0).group(1)
+          : null;
+      String? textColorValue = colorRegex.allMatches(widgetContent).length > 1
+          ? colorRegex.allMatches(widgetContent).elementAt(1).group(1)
+          : null;
+      double width = double.tryParse(sizeRegex.firstMatch(widgetContent)?.group(1) ?? '100') ?? 100;
+      double height = double.tryParse(sizeRegex.firstMatch(widgetContent)?.group(2) ?? '50') ?? 50;
+      double fontSize = double.tryParse(fontSizeRegex.firstMatch(widgetContent)?.group(1) ?? '14') ?? 14;
+      bool isBold = fontWeightRegex.firstMatch(widgetContent)?.group(1) == 'bold';
+      bool isItalic = fontStyleRegex.firstMatch(widgetContent)?.group(1) == 'italic';
+      String fontFamily = fontFamilyRegex.firstMatch(widgetContent)?.group(1) ?? 'Roboto';
 
-      print(
-          "Parsed widget - ID: $id, Type: $type, Position: ($left, $top), Text: $text");
+      // 색상 값 처리 (null-safe)
+      Color color = colorValue != null ? Color(int.parse(colorValue, radix: 16)) : Colors.black;
+      Color textColor = textColorValue != null ? Color(int.parse(textColorValue, radix: 16)) : Colors.black;
 
+      //디버깅 로그
+      print("Parsed widget - ID: $id, Type: $type, Position: ($left, $top), Text: $text, color: $color, textColor: $textColor");
+      print("Widget content: $widgetContent");
+      print("Text regex match: ${textRegex.firstMatch(widgetContent)}");
+      print("Extracted text: $text");
+
+      // 위젯 데이터를 리스트에 추가
       parsedWidgets.add(WidgetData(
         id: id,
         type: type,
@@ -153,6 +207,11 @@ class CodeImportExportProvider with ChangeNotifier {
         height: height,
         color: color,
         text: text,
+        fontSize: fontSize,
+        textColor: textColor,
+        isBold: isBold,
+        isItalic: isItalic,
+        fontFamily: fontFamily,
       ));
     }
 
@@ -162,5 +221,4 @@ class CodeImportExportProvider with ChangeNotifier {
 
     return parsedWidgets;
   }
-
 }

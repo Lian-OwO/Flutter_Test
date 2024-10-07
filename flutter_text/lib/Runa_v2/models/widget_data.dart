@@ -11,6 +11,11 @@ class WidgetData {
   double height;
   Color color;
   String text;
+  double? fontSize;
+  Color textColor;
+  bool isBold;
+  bool isItalic;
+  String fontFamily;
 
   /// 생성자: 필수 속성을 받아 위젯 데이터를 초기화
   WidgetData({
@@ -22,9 +27,16 @@ class WidgetData {
     required this.height,
     required this.color,
     this.text = '',
+    this.fontSize,
+    this.textColor = Colors.black,
+    this.isBold = false,
+    this.isItalic = false,
+    this.fontFamily = 'Roboto',
+
   }) : id = id ?? const Uuid().v4() {  // UUID는 처음에만 생성
     // originalPosition이 null이면 현재 position을 사용
     _originalPosition = originalPosition ?? position;
+    fontSize ??= 14.0;  // null이면 기본값 설정
   }
 
   /// originalPosition getter: originalPosition이 null이면 position 반환
@@ -40,6 +52,11 @@ class WidgetData {
     double? height,
     Color? color,
     String? text,
+    double? fontSize,
+    Color? textColor,
+    bool? isBold,
+    bool? isItalic,
+    String? fontFamily,
   }) {
     return WidgetData(
       id: id ?? this.id,  // UUID는 변경되지 않도록 유지
@@ -50,6 +67,11 @@ class WidgetData {
       height: height ?? this.height,
       color: color ?? this.color,
       text: text ?? this.text,  // 텍스트가 전달되지 않으면 기존 텍스트 유지
+      fontSize: fontSize ?? this.fontSize,
+      textColor: textColor ?? this.textColor,
+      isBold: isBold ?? this.isBold,  // Bold 상태 유지
+      isItalic: isItalic ?? this.isItalic,  // Italic 상태 유지
+      fontFamily: fontFamily ?? this.fontFamily,
     );
   }
 
@@ -99,6 +121,10 @@ class WidgetData {
       'height': height,
       'color': color.value,
       'text': text,
+      'fontSize': fontSize,
+      'textColor': textColor.value,
+      'isBold': isBold,
+      'isItalic': isItalic,
     };
   }
 
@@ -112,6 +138,10 @@ class WidgetData {
       height: json['height'],
       color: Color(json['color']),
       text: json['text'],
+      fontSize: json['fontSize'],
+      textColor: Color(json['textColor']),
+      isBold: json['isBold'],
+      isItalic: json['isItalic'],
     );
   }
 }

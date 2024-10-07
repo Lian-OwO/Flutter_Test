@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/widget_data.dart';
+import 'package:flutter/foundation.dart';
 
 /// WidgetProvider 클래스: 위젯 상태 관리 및 조작을 담당
 class WidgetProvider extends ChangeNotifier {
@@ -155,42 +156,40 @@ class WidgetProvider extends ChangeNotifier {
 
   /// 코드에서 위젯 업데이트
   void updateWidgetsFromCode(List<WidgetData> newWidgets) {
-    print("Updating widgets from code. Current widgets: ${_widgets.length}, New widgets: ${newWidgets.length}");
+    print("Updating widgets from code. New widgets: ${newWidgets.length}");
 
-    // 기존 위젯의 ID를 보존하기 위한 맵
-    Map<String, WidgetData> existingWidgetsMap = {for (var w in _widgets) w.id: w};
-
-    _widgets = newWidgets.map((newWidget) {
-      WidgetData? existingWidget = existingWidgetsMap[newWidget.id];
-
-      if (existingWidget != null) {
-        print("Updating existing widget - ID: ${existingWidget.id}");
-        return existingWidget.copyWith(
+    for (var newWidget in newWidgets) {
+      int index = _widgets.indexWhere((w) => w.id == newWidget.id);
+      if (index != -1) {
+        _widgets[index] = _widgets[index].copyWith(
           position: newWidget.position,
           width: newWidget.width,
           height: newWidget.height,
           color: newWidget.color,
           text: newWidget.text,
+          fontSize: newWidget.fontSize,
+          textColor: newWidget.textColor,
+          isBold: newWidget.isBold,
+          isItalic: newWidget.isItalic,
+          fontFamily: newWidget.fontFamily,
         );
+        print("Updated existing widget - ID: ${newWidget.id}, Text: ${newWidget.text}, Font Family: ${newWidget.fontFamily}");
       } else {
-        print("Adding new widget - ID: ${newWidget.id}");
-        return newWidget;
+        _widgets.add(newWidget);
+        print("Added new widget - ID: ${newWidget.id}, Text: ${newWidget.text}, Font Family: ${newWidget.fontFamily}");
       }
-    }).toList();
+    }
 
     // 선택된 위젯 업데이트
     if (_selectedWidget != null) {
       _selectedWidget = _widgets.firstWhere(
             (w) => w.id == _selectedWidget!.id,
-        orElse: () {
-          print("Selected widget not found after update - ID: ${_selectedWidget!.id}");
-          return _selectedWidget!;
-        },
+        orElse: () => _selectedWidget!,
       );
     }
 
     notifyListeners();
-    print("Widget update completed. Total widgets: ${_widgets.length}");
+    print("업데이트 완료. 총 위젯 수 : ${_widgets.length}");
   }
 
   /// 위젯 삭제
@@ -238,6 +237,75 @@ class WidgetProvider extends ChangeNotifier {
       return ValueNotifier<Color>(Colors.blue); // 기본 색상 값
     }
   }
+
+  ValueListenable<double> getFontSizeListenable(String id) {
+    final widget = _widgets.firstWhere((w) => w.id == id);
+    return ValueNotifier<double>(widget.fontSize ?? 14.0);
+  }
+
+  ValueListenable<Color> getTextColorListenable(String id) {
+    return ValueNotifier<Color>(_widgets.firstWhere((w) => w.id == id).textColor);
+  }
+
+  void updateWidgetFontSize(String id, double fontSize) {
+    final index = _widgets.indexWhere((widget) => widget.id == id);
+    if (index != -1) {
+      _widgets[index] = _widgets[index].copyWith(fontSize: fontSize);
+      _selectedWidget = _widgets[index];
+      notifyListeners();
+      print('WidgetProvider: 폰트 크기 업데이트 uuid - $id, FontSize: $fontSize');
+    }
+  }
+
+  WidgetProvider() {
+    _initializeFontSizes();
+  }
+
+  void _initializeFontSizes() {
+    for (int i = 0; i < _widgets.length; i++) {
+      if (_widgets[i].fontSize == null) {
+        _widgets[i] = _widgets[i].copyWith(fontSize: 14.0);
+      }
+    }
+  }
+
+
+  void updateWidgetTextColor(String id, Color color) {
+    final index = _widgets.indexWhere((widget) => widget.id == id);
+    if (index != -1) {
+      _widgets[index] = _widgets[index].copyWith(textColor: color);
+      _selectedWidget = _widgets[index];
+      notifyListeners();
+      print('WidgetProvider: 텍스트 색상 업데이트 uuid - $id, TextColor: $color');
+    }
+  }
+
+  void updateWidgetBold(String id, bool isBold) {
+    final index = _widgets.indexWhere((widget) => widget.id == id);
+    if (index != -1) {
+      _widgets[index] = _widgets[index].copyWith(isBold: isBold);
+      notifyListeners();
+    }
+  }
+
+  void updateWidgetItalic(String id, bool isItalic) {
+    final index = _widgets.indexWhere((widget) => widget.id == id);
+    if (index != -1) {
+      _widgets[index] = _widgets[index].copyWith(isItalic: isItalic);
+      notifyListeners();
+    }
+  }
+  void updateWidgetFontFamily(String id, String fontFamily) {
+    final index = _widgets.indexWhere((widget) => widget.id == id);
+    if (index != -1) {
+      _widgets[index] = _widgets[index].copyWith(fontFamily: fontFamily);
+      _selectedWidget = _widgets[index];
+      notifyListeners();
+      print('WidgetProvider: 폰트 패밀리 업데이트 uuid - $id, FontFamily: $fontFamily');
+    }
+  }
+
+
 
   // 페이지 속성 관리 메서드
 

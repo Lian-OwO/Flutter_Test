@@ -49,6 +49,7 @@ class _CodeViewAreaState extends State<CodeViewArea> {
     }
   }
 
+  //코드에 따라 변경
   void _onCodeChanged() {
     if (!_isUserEditing) return;
 
@@ -68,10 +69,16 @@ class _CodeViewAreaState extends State<CodeViewArea> {
 
       if (newWidgets.isNotEmpty) {
         widgetProvider.updateWidgetsFromCode(newWidgets);
+          print("Widgets updated successfully");
       } else {
         print("No widgets parsed from code. Keeping existing widgets.");
-        // 사용자에게 알림을 표시할 수 있습니다.
+
       }
+    } else {
+      // 코드에 오류가 있을 경우 사용자에게 알림
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error in code: $newErrorText')),
+      );
     }
   }
 
