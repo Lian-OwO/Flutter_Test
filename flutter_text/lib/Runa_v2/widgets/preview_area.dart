@@ -55,7 +55,7 @@ class _PreviewAreaState extends State<PreviewArea> {
                   position: dropPosition,
                   width: details.data == 'Button' ? 100 : 150,
                   height: details.data == 'Button' ? 50 : 100,
-                  color: details.data == 'Button' ? Colors.blue : Colors.green,
+                  backgroundColor: details.data == 'Button' ? Colors.blue : Colors.green,
                   text: details.data == 'Button' ? 'New Button' : 'New Container',
                 ));
               },
@@ -190,7 +190,8 @@ class _PreviewAreaState extends State<PreviewArea> {
             provider.selectWidget(widgetData.id);
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: widgetData.color,
+            backgroundColor: widgetData.backgroundColor,
+            foregroundColor: widgetData.textColor,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(4),
               side: borderSide,
@@ -207,7 +208,7 @@ class _PreviewAreaState extends State<PreviewArea> {
         width: widgetData.width,
         height: widgetData.height,
         decoration: BoxDecoration(
-          color: widgetData.color,
+          color: widgetData.backgroundColor,
           border: Border.fromBorderSide(borderSide),
         ),
         child: Center(

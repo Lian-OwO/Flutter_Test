@@ -209,7 +209,7 @@ class PropertyPanel extends StatelessWidget {
               if (isTextColor) {
                 provider.updateWidgetTextColor(widget.id, newColor);
               } else {
-                provider.updateWidgetColor(widget.id, newColor);
+                provider.updateWidgetBackgroundColor(widget.id, newColor);
               }
             }
           },

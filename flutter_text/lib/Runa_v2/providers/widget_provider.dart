@@ -28,13 +28,14 @@ class WidgetProvider extends ChangeNotifier {
     _widgets.add(widget);
     selectWidget(widget.id);
     notifyListeners();
-    print('WidgetProvider: 위젯추가(${widget.type}) uuid - ${widget.id}, Width: ${widget.width}, Height: ${widget.height}, Color: ${widget.color}, Text: ${widget.text}');
+    print('WidgetProvider: 위젯추가(${widget.type}) uuid - ${widget.id}, Width: ${widget.width}, Height: ${widget.height}, Color: ${widget.backgroundColor}, Text: ${widget.text}');
 
   }
 
   /// 위젯 선택
   void selectWidget(String id) {
     try {
+      // 위젯 ID로 선택된 위젯 찾기
       _selectedWidget = _widgets.firstWhere((widget) => widget.id == id);
       print('WidgetProvider: 위젯선택 (${_selectedWidget!.type}) uuid - $id');
       notifyListeners();
@@ -115,19 +116,24 @@ class WidgetProvider extends ChangeNotifier {
   }
 
   /// 위젯 색상 업데이트
-  void updateWidgetColor(String id, Color newColor) {
-    final index = _widgets.indexWhere((widget) => widget.id == id);
-    if (index != -1) {
-      _widgets[index] = _widgets[index].copyWith(color: newColor);
-      _selectedWidget = _widgets[index];
+  void updateWidgetBackgroundColor(String id, Color newColor) {
+    WidgetData? selectedWidget;  // nullable로 설정
+    try {
+      selectedWidget = _widgets.firstWhere((widget) => widget.id == id);  // 위젯 찾기
+    } catch (e) {
+      selectedWidget = null;  // 없으면 null로 설정
+    }
 
-      // ValueNotifier 업데이트
-      getColorListenable(id).value = newColor;
-
-      print('WidgetProvider: 색상 업데이트 (${_widgets[index].type}) uuid - $id, Color: $newColor');
+    if (selectedWidget != null && _selectedWidget?.id == id) {
+      selectedWidget.backgroundColor = newColor;
       notifyListeners();
+      print('배경색 업데이트 (위젯 ID: $id, 새로운 색상: $newColor)');
+    } else {
+      print('배경색 업데이트 실패 - 선택된 위젯 아님 (위젯 ID: $id)');
     }
   }
+
+
 
   /// 위젯 텍스트 업데이트
   void updateWidgetText(String id, String newText) {
@@ -161,22 +167,34 @@ class WidgetProvider extends ChangeNotifier {
     for (var newWidget in newWidgets) {
       int index = _widgets.indexWhere((w) => w.id == newWidget.id);
       if (index != -1) {
+        Color oldBackgroundColor = _widgets[index].backgroundColor;
+        Color oldTextColor = _widgets[index].textColor;
+
         _widgets[index] = _widgets[index].copyWith(
-          position: newWidget.position,
-          width: newWidget.width,
-          height: newWidget.height,
-          color: newWidget.color,
+          position: _widgets[index].position,
+          width: _widgets[index].width,
+          height: _widgets[index].height,
+          backgroundColor: newWidget.backgroundColor,
+          textColor: newWidget.textColor,
           text: newWidget.text,
           fontSize: newWidget.fontSize,
-          textColor: newWidget.textColor,
           isBold: newWidget.isBold,
           isItalic: newWidget.isItalic,
           fontFamily: newWidget.fontFamily,
         );
-        print("Updated existing widget - ID: ${newWidget.id}, Text: ${newWidget.text}, Font Family: ${newWidget.fontFamily}");
+
+        print("Updated existing widget - ID: ${newWidget.id}, Type: ${newWidget.type}");
+        print("텍스트: '${newWidget.text}'");
+        print("배경색: 전 : $oldBackgroundColor, 변경된 색 : ${newWidget.backgroundColor}");
+        print("폰트색: 전 : $oldTextColor, 변경된 색 : ${newWidget.textColor}");
+
+        // ValueNotifier 업데이트
+        getColorListenable(newWidget.id).value = newWidget.backgroundColor;
+        getTextColorListenable(newWidget.id).value = newWidget.textColor;
+
       } else {
         _widgets.add(newWidget);
-        print("Added new widget - ID: ${newWidget.id}, Text: ${newWidget.text}, Font Family: ${newWidget.fontFamily}");
+        print("Added new widget - ID: ${newWidget.id}, Type: ${newWidget.type}, Text: ${newWidget.text}, BackgroundColor: ${newWidget.backgroundColor}, TextColor: ${newWidget.textColor}");
       }
     }
 
@@ -231,7 +249,7 @@ class WidgetProvider extends ChangeNotifier {
 
   ValueNotifier<Color> getColorListenable(String id) {
     try {
-      return ValueNotifier<Color>(_widgets.firstWhere((w) => w.id == id).color);
+      return ValueNotifier<Color>(_widgets.firstWhere((w) => w.id == id).backgroundColor);
     } catch (e) {
       print('Widget with id $id not found. Returning default color.');
       return ValueNotifier<Color>(Colors.blue); // 기본 색상 값
@@ -243,10 +261,14 @@ class WidgetProvider extends ChangeNotifier {
     return ValueNotifier<double>(widget.fontSize ?? 14.0);
   }
 
-  ValueListenable<Color> getTextColorListenable(String id) {
-    return ValueNotifier<Color>(_widgets.firstWhere((w) => w.id == id).textColor);
+  ValueNotifier<Color> getTextColorListenable(String id) {
+    try {
+      return ValueNotifier<Color>(_widgets.firstWhere((w) => w.id == id).textColor);
+    } catch (e) {
+      print('Widget with id $id not found. Returning default text color.');
+      return ValueNotifier<Color>(Colors.black); // 기본 텍스트 색상 값
+    }
   }
-
   void updateWidgetFontSize(String id, double fontSize) {
     final index = _widgets.indexWhere((widget) => widget.id == id);
     if (index != -1) {
@@ -269,17 +291,19 @@ class WidgetProvider extends ChangeNotifier {
     }
   }
 
-
-  void updateWidgetTextColor(String id, Color color) {
+  //위젯 텍스트 컬러
+  void updateWidgetTextColor(String id, Color newColor) {
     final index = _widgets.indexWhere((widget) => widget.id == id);
-    if (index != -1) {
-      _widgets[index] = _widgets[index].copyWith(textColor: color);
-      _selectedWidget = _widgets[index];
+    if (index != -1 && _selectedWidget?.id == id) { // 선택된 위젯이 맞는지 확인
+      _widgets[index] = _widgets[index].copyWith(textColor: newColor);
       notifyListeners();
-      print('WidgetProvider: 텍스트 색상 업데이트 uuid - $id, TextColor: $color');
+      print('WidgetProvider: 텍스트 색상 업데이트 (Widget ID: $id), New Text Color: $newColor');
+    } else {
+      print('WidgetProvider: 텍스트 색상 업데이트 실패 (선택된 위젯이 아님) - Widget ID: $id');
     }
   }
 
+  //위젯 텍스트 볼드체
   void updateWidgetBold(String id, bool isBold) {
     final index = _widgets.indexWhere((widget) => widget.id == id);
     if (index != -1) {
@@ -288,6 +312,7 @@ class WidgetProvider extends ChangeNotifier {
     }
   }
 
+  //위젯 텍스트 이탤릭체
   void updateWidgetItalic(String id, bool isItalic) {
     final index = _widgets.indexWhere((widget) => widget.id == id);
     if (index != -1) {
@@ -295,6 +320,8 @@ class WidgetProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  //위젯 텍스트 폰트 설정
   void updateWidgetFontFamily(String id, String fontFamily) {
     final index = _widgets.indexWhere((widget) => widget.id == id);
     if (index != -1) {
@@ -341,7 +368,7 @@ class WidgetProvider extends ChangeNotifier {
         // 기존 위젯 업데이트
         _widgets[index] = _widgets[index].copyWith(
           text: updatedWidget.text,
-          color: updatedWidget.color,
+          backgroundColor: updatedWidget.backgroundColor,
           width: updatedWidget.width,
           height: updatedWidget.height,
           // position은 유지
@@ -373,7 +400,7 @@ class WidgetProvider extends ChangeNotifier {
           position: newWidget.position,
           width: newWidget.width,
           height: newWidget.height,
-          color: newWidget.color,
+          backgroundColor: newWidget.backgroundColor,
           text: newWidget.text,
         );
       } else {

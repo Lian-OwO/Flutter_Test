@@ -9,7 +9,7 @@ class WidgetData {
   Offset? _originalPosition;
   double width;
   double height;
-  Color color;
+  Color backgroundColor;
   String text;
   double? fontSize;
   Color textColor;
@@ -25,7 +25,7 @@ class WidgetData {
     Offset? originalPosition,
     required this.width,
     required this.height,
-    required this.color,
+    required this.backgroundColor,
     this.text = '',
     this.fontSize,
     this.textColor = Colors.black,
@@ -50,7 +50,7 @@ class WidgetData {
     Offset? originalPosition,
     double? width,
     double? height,
-    Color? color,
+    Color? backgroundColor,
     String? text,
     double? fontSize,
     Color? textColor,
@@ -65,7 +65,7 @@ class WidgetData {
       originalPosition: originalPosition ?? _originalPosition,
       width: width ?? this.width,
       height: height ?? this.height,
-      color: color ?? this.color,
+      backgroundColor: backgroundColor ?? this.backgroundColor,
       text: text ?? this.text,  // 텍스트가 전달되지 않으면 기존 텍스트 유지
       fontSize: fontSize ?? this.fontSize,
       textColor: textColor ?? this.textColor,
@@ -95,7 +95,7 @@ class WidgetData {
         ElevatedButton(
           onPressed: () {},
           style: ElevatedButton.styleFrom(
-            backgroundColor: Color(0x${color.value.toRadixString(16).padLeft(8, '0')}),
+            backgroundColor: Color(0x${backgroundColor.value.toRadixString(16).padLeft(8, '0')}),
           ),
           child: Text('$text'),
         )
@@ -103,7 +103,7 @@ class WidgetData {
     } else {
       return '''
         Container(
-          color: Color(0x${color.value.toRadixString(16).padLeft(8, '0')}),
+          color: Color(0x${backgroundColor.value.toRadixString(16).padLeft(8, '0')}),
           child: Center(child: Text('$text')),
         )
       ''';
@@ -119,7 +119,7 @@ class WidgetData {
       'originalPosition': {'dx': originalPosition.dx, 'dy': originalPosition.dy},
       'width': width,
       'height': height,
-      'color': color.value,
+      'backgroundColor': backgroundColor.value,
       'text': text,
       'fontSize': fontSize,
       'textColor': textColor.value,
@@ -136,7 +136,7 @@ class WidgetData {
       position: Offset(json['position']['dx'], json['position']['dy']),
       width: json['width'],
       height: json['height'],
-      color: Color(json['color']),
+      backgroundColor: Color(json['backgroundColor']),
       text: json['text'],
       fontSize: json['fontSize'],
       textColor: Color(json['textColor']),
