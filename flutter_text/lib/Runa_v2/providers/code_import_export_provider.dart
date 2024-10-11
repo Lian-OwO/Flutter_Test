@@ -122,6 +122,8 @@ class CodeImportExportProvider with ChangeNotifier {
         final content = await file.readAsString();
         final widgets = parseCodeToWidgets(content);
         widgetProvider.setWidgets(widgets);
+        //변경전달
+        widgetProvider.notifyListeners();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Code imported successfully')),
         );

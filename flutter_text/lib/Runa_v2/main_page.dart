@@ -28,7 +28,7 @@ class MainPage extends StatelessWidget {
           ),
     IconButton(
     icon: const Icon(Icons.file_upload),
-      onPressed: () => codeImportExportProvider.exportCode(context),
+      onPressed: () => codeImportExportProvider.importCode(context),
     ),
     IconButton(
     icon: const Icon(Icons.file_download),

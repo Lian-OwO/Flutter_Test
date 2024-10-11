@@ -390,6 +390,7 @@ class WidgetProvider extends ChangeNotifier {
 
   /// 위젯 설정 (기존 메서드 유지)
   void setWidgets(List<WidgetData> newWidgets) {
+
     for (var newWidget in newWidgets) {
       final existingIndex = _widgets.indexWhere((widget) => widget.id == newWidget.id);
 
@@ -402,10 +403,12 @@ class WidgetProvider extends ChangeNotifier {
           height: newWidget.height,
           backgroundColor: newWidget.backgroundColor,
           text: newWidget.text,
+          textColor: newWidget.textColor,  // 이 부분도 필요하다면 추가
         );
       } else {
-        // 새로운 위젯은 추가하지 않음
-        print('새 위젯 추가 시도 무시: ${newWidget.id}');
+        // 새로운 위젯은 리스트에 추가
+        print('새 위젯 추가: ${newWidget.id}');
+        _widgets.add(newWidget); // 새로운 위젯을 추가합니다.
       }
     }
     notifyListeners();  // 상태 변경 알림
